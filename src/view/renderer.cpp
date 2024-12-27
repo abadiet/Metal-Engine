@@ -64,6 +64,8 @@ void Renderer::draw(MTK::View* view) {
 
     encoder->setRenderPipelineState(generalPipeline);
     encoder->setDepthStencilState(depthStencilState);
+    encoder->setCullMode(MTL::CullModeBack);
+    encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
     simd::float4x4 transform = mtlm::translation({0.5f, 0.5f, 2.0f}) * mtlm::z_rotation(0.5f) * mtlm::scale(0.1f);
     encoder->setVertexBytes(&transform, sizeof(transform), 1);

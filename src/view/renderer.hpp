@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "view/mesh_factory.hpp"
-#include "view/pipeline_factory.hpp"
+#include "view/pipeline_builder.hpp"
 #include "model/mtlm.hpp"
 
 
@@ -18,6 +18,7 @@ class Renderer {
     public:
         Renderer(MTL::Device* device);
         ~Renderer();
+        void buildDepthStencilState();
         void draw(MTK::View* view);
 
     private:
@@ -26,6 +27,7 @@ class Renderer {
 
         MTL::Device* device;
         MTL::CommandQueue* commandQueue;
+        MTL::DepthStencilState* depthStencilState;
 
         MTL::RenderPipelineState *trianglePipeline, *generalPipeline;
         MTL::Buffer *triangleMesh;

@@ -1,4 +1,4 @@
-#include "view/pipeline_factory.hpp"
+#include "view/pipeline_builder.hpp"
 
 PipelineBuilder::PipelineBuilder(MTL::Device* device):
     device(device->retain())

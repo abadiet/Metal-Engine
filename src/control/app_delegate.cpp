@@ -18,7 +18,7 @@ void AppDelegate::applicationWillFinishLaunching(NS::Notification* notification)
 void AppDelegate::applicationDidFinishLaunching(NS::Notification* notification) {
     CGRect frame;
     frame.origin = {100.0, 100.0};
-    frame.size = {640.0, 480.0};
+    frame.size = {1000.0, 750.0};
 
     window = NS::Window::alloc()->init(
         frame,
@@ -37,7 +37,7 @@ void AppDelegate::applicationDidFinishLaunching(NS::Notification* notification) 
     mtkView->setDelegate(viewDelegate);
 
     window->setContentView(mtkView);
-    window->setTitle(NS::String::string("Window", NS::StringEncoding::UTF8StringEncoding));
+    window->setTitle(NS::String::string("Metal Engine", NS::StringEncoding::UTF8StringEncoding));
     window->makeKeyAndOrderFront(nullptr);
 
     NS::Application* app = reinterpret_cast<NS::Application*>(notification->object());

@@ -14,16 +14,21 @@ Renderer::Renderer(MTL::Device* device):
     scene->getCamera(camId)->setOrientation({-0.5f, 0.0f, 0.0f});
     scene->getCamera(camId)->setProjection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
-    const size_t objId = scene->addObject();
+    size_t objId = scene->addObject();
     scene->getObject(objId)->setMesh(&meshes[1]);
     scene->getObject(objId)->setScale({0.05f, 0.05f, 0.05f});
     scene->getObject(objId)->setOrientation({0.0f, 2.0f, 0.5f});
     scene->getObject(objId)->setPosition({0.5f, 0.5f, 2.0f});
 
-    const size_t objId2 = scene->addObject();
-    scene->getObject(objId2)->setMesh(&meshes[1]);
-    scene->getObject(objId2)->setScale({0.5f, 0.5f, 0.5f});
-    scene->getObject(objId2)->setPosition({0.0f, 0.0f, 3.0f});
+    objId = scene->addObject();
+    scene->getObject(objId)->setMesh(&meshes[1]);
+    scene->getObject(objId)->setScale({0.05f, 0.05f, 0.05f});
+    scene->getObject(objId)->setPosition({0.0f, 0.5f, 4.0f});
+
+    objId = scene->addObject();
+    scene->getObject(objId)->setMesh(&meshes[1]);
+    scene->getObject(objId)->setScale({0.5f, 0.5f, 0.5f});
+    scene->getObject(objId)->setPosition({0.0f, 0.0f, 3.0f});
 
 }
 
@@ -77,6 +82,12 @@ void Renderer::draw(MTK::View* view) {
     encoder->setDepthStencilState(depthStencilState);
     encoder->setCullMode(MTL::CullModeFront);
     encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
+
+    scene->getObject(0)->rotate({0.02f, 0.01f, 0.03f});
+    scene->getObject(0)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 0.0f, 1.0f}, 0.03f);
+
+    scene->getObject(1)->rotate({0.02f, 0.01f, 0.03f});
+    scene->getObject(1)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, 0.03f);
 
     for (size_t i = 0; i < scene->getObjectCount(); i++) {
         const auto object = scene->getObject(i);

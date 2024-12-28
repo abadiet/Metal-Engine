@@ -1,4 +1,17 @@
 # Metal-Engine
+Simple C++ Apple Metal 3D engine based on a Model-View-Controller pattern.
+
+> [WARNING]
+> I coded this project for fun in a few days. Many bugs still remain and many features are missing.
+
+https://github.com/abadiet/Metal-Engine/blob/main/resources/beta-12-29-2024.mov
+
+## Road Map
+- [ ] Lights
+- [ ] Textures
+- [ ] Cleaning
+- [ ] User Inputs?
+- [ ] Ray tracing
 
 ## Resources
 

@@ -1,40 +1,49 @@
 #include "view/renderer.hpp"
 
 Renderer::Renderer(MTL::Device* device):
+    scene(new Scene()),
     device(device->retain())
 {
     commandQueue = device->newCommandQueue();
     buildMeshes();
     buildShaders();
     buildDepthStencilState();
+
+    const size_t camId = scene->add_camera();
+    scene->get_camera(camId)->set_position({0.0f, 0.0f, 0.0f});
+    scene->get_camera(camId)->set_rotation({0.0f, 0.0f, 0.0f});
+    scene->get_camera(camId)->set_projection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
+
+    const size_t objId = scene->add_object();
+    scene->get_object(objId)->set_mesh(&meshes[1]);
+    scene->get_object(objId)->scale({0.1f, 0.1f, 0.1f});
+    scene->get_object(objId)->rotate({0.0f, 0.0f, 0.5f});
+    scene->get_object(objId)->translate({0.5f, 0.5f, 2.0f});
+
+    const size_t objId2 = scene->add_object();
+    scene->get_object(objId2)->set_mesh(&meshes[1]);
+    scene->get_object(objId2)->translate({0.0f, 0.0f, 3.0f});
+
 }
 
 Renderer::~Renderer() {
+    Mesh::releaseVertexDescriptor();
     depthStencilState->release();
-    triangleMesh->release();
-    quadMesh.vertexBuffer->release();
-    quadMesh.indexBuffer->release();
-    trianglePipeline->release();
     generalPipeline->release();
     commandQueue->release();
     device->release();
+    delete scene;
 }
 
 void Renderer::buildMeshes() {
-    triangleMesh = MeshFactory::buildTriangle(device);
-    quadMesh = MeshFactory::buildQuad(device);
+    meshes.push_back(Mesh::buildQuad(device));
+    meshes.push_back(Mesh::buildCube(device));
 }
 
 void Renderer::buildShaders() {
     PipelineBuilder builder(device);
 
-    builder.set_vertex_descriptor(quadMesh.vertexDescriptor);
-
-    builder.set_filename("../shaders/triangle.metal");
-    builder.set_vertex_entry_point("vertexMain");
-    builder.set_fragment_entry_point("fragmentMain");
-    trianglePipeline = builder.build();
-
+    builder.set_vertex_descriptor(Mesh::buildVertexDescriptor());
     builder.set_filename("../shaders/general.metal");
     builder.set_vertex_entry_point("vertexMainGeneral");
     builder.set_fragment_entry_point("fragmentMainGeneral");
@@ -58,24 +67,23 @@ void Renderer::draw(MTK::View* view) {
     MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
     MTL::RenderPassDescriptor* renderPass = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(renderPass);
-    
-    simd::float4x4 projection = mtlm::perspective_projection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
-    encoder->setVertexBytes(&projection, sizeof(projection), 2);
+
+    scene->get_camera(0)->set_rotation({0.0f, 0.0f, rotation});
+    simd::float4x4 view_cam = scene->get_camera(0)->view_matrix();
+    rotation += 0.01f;
+    encoder->setVertexBytes(&view_cam, sizeof(view_cam), 2);
 
     encoder->setRenderPipelineState(generalPipeline);
     encoder->setDepthStencilState(depthStencilState);
     encoder->setCullMode(MTL::CullModeBack);
     encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    simd::float4x4 transform = mtlm::translation({0.5f, 0.5f, 2.0f}) * mtlm::z_rotation(0.5f) * mtlm::scale(0.1f);
-    encoder->setVertexBytes(&transform, sizeof(transform), 1);
-    encoder->setVertexBuffer(triangleMesh, 0, 0);
-    encoder->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), 3);
-
-    transform = mtlm::translation({0.0f, 0.0f, 3.0f});
-    encoder->setVertexBytes(&transform, sizeof(transform), 1);
-    encoder->setVertexBuffer(quadMesh.vertexBuffer, 0, 0);
-    encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 6, MTL::IndexType::IndexTypeUInt16, quadMesh.indexBuffer, 0, 6);
+    for (size_t i = 0; i < scene->get_object_count(); i++) {
+        simd::float4x4 transform = scene->get_object(i)->get_transform();
+        encoder->setVertexBytes(&transform, sizeof(transform), 1);
+        encoder->setVertexBuffer(scene->get_object(i)->get_mesh()->getVertexBuffer(), 0, 0);
+        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 6, MTL::IndexType::IndexTypeUInt16, scene->get_object(i)->get_mesh()->getIndexBuffer(), 0, 6);
+    }
 
     encoder->endEncoding();
     commandBuffer->presentDrawable(view->currentDrawable());

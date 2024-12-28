@@ -7,10 +7,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
-#include "view/mesh_factory.hpp"
+#include "view/mesh.hpp"
 #include "view/pipeline_builder.hpp"
 #include "model/mtlm.hpp"
+#include "model/scene.hpp"
 
 
 class Renderer {
@@ -25,13 +27,16 @@ class Renderer {
         void buildMeshes();
         void buildShaders();
 
+        Scene *scene;
+
         MTL::Device* device;
         MTL::CommandQueue* commandQueue;
         MTL::DepthStencilState* depthStencilState;
 
-        MTL::RenderPipelineState *trianglePipeline, *generalPipeline;
-        MTL::Buffer *triangleMesh;
-        Mesh quadMesh;
+        MTL::RenderPipelineState *generalPipeline;
+        std::vector<Mesh> meshes;
+
+        float rotation = 0.0f;
 
 };
 

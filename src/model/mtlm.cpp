@@ -18,22 +18,26 @@ simd::float4x4 mtlm::translation(simd::float3 dPos) {
     };
 }
 
-simd::float4x4 mtlm::z_rotation(float angle) {
-    const float c = cos(angle);
-    const float s = sin(angle);
+simd::float4x4 mtlm::rotation(simd::float3 angles) {
+    const float c_x = cos(angles[0]);
+    const float s_x = sin(angles[0]);
+    const float c_y = cos(angles[1]);
+    const float s_y = sin(angles[1]);
+    const float c_z = cos(angles[2]);
+    const float s_z = sin(angles[2]);
     return simd::float4x4{
-        simd::float4{c, s, 0.0f, 0.0f},
-        simd::float4{-s, c, 0.0f, 0.0f},
-        simd::float4{0.0f, 0.0f, 1.0f, 0.0f},
-        simd::float4{0.0f, 0.0f, 0.0f, 1.0f}
+        simd::float4{c_z * c_y, c_z * s_y * s_x - s_z * c_x, c_z * s_y * c_x + s_z * s_x, 0.0f},
+        simd::float4{s_z * c_y, s_z * s_y * s_x + c_z * c_x, s_z * s_y * c_x - c_z * s_x, 0.0f},
+        simd::float4{     -s_y,                   c_y * s_x,                   c_y * c_x, 0.0f},
+        simd::float4{     0.0f,                        0.0f,                        0.0f, 1.0f}
     };
 }
 
-simd::float4x4 mtlm::scale(float scale) {
+simd::float4x4 mtlm::scale(simd::float3 ratios) {
     return simd::float4x4{
-        simd::float4{scale, 0.0f, 0.0f, 0.0f},
-        simd::float4{0.0f, scale, 0.0f, 0.0f},
-        simd::float4{0.0f, 0.0f, scale, 0.0f},
+        simd::float4{ratios[0], 0.0f, 0.0f, 0.0f},
+        simd::float4{0.0f, ratios[1], 0.0f, 0.0f},
+        simd::float4{0.0f, 0.0f, ratios[2], 0.0f},
         simd::float4{0.0f, 0.0f, 0.0f, 1.0f}
     };
 }

@@ -7,6 +7,7 @@
 #include <Metal/Metal.hpp>
 #include "control/view_delegate.hpp"
 
+
 class AppDelegate : public NS::ApplicationDelegate {
 
     public:

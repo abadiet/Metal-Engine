@@ -10,18 +10,19 @@ Renderer::Renderer(MTL::Device* device):
     buildDepthStencilState();
 
     const size_t camId = scene->addCamera();
-    scene->getCamera(camId)->setPosition({0.0f, 0.0f, 0.0f});
-    scene->getCamera(camId)->setOrientation({0.0f, 0.0f, 0.0f});
+    scene->getCamera(camId)->setPosition({0.0f, 1.5f, 0.0f});
+    scene->getCamera(camId)->setOrientation({-0.5f, 0.0f, 0.0f});
     scene->getCamera(camId)->setProjection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
     const size_t objId = scene->addObject();
     scene->getObject(objId)->setMesh(&meshes[1]);
-    scene->getObject(objId)->setScale({0.1f, 0.1f, 0.1f});
-    scene->getObject(objId)->setOrientation({0.0f, 0.0f, 0.5f});
+    scene->getObject(objId)->setScale({0.05f, 0.05f, 0.05f});
+    scene->getObject(objId)->setOrientation({0.0f, 2.0f, 0.5f});
     scene->getObject(objId)->setPosition({0.5f, 0.5f, 2.0f});
 
     const size_t objId2 = scene->addObject();
     scene->getObject(objId2)->setMesh(&meshes[1]);
+    scene->getObject(objId2)->setScale({0.5f, 0.5f, 0.5f});
     scene->getObject(objId2)->setPosition({0.0f, 0.0f, 3.0f});
 
 }
@@ -68,7 +69,7 @@ void Renderer::draw(MTK::View* view) {
     MTL::RenderPassDescriptor* renderPass = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-    scene->getCamera(0)->mvmtCircle({0.0f, 0.0f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
+    scene->getCamera(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
     simd::float4x4 viewCam = scene->getCamera(0)->viewMatrix();
     encoder->setVertexBytes(&viewCam, sizeof(viewCam), 2);
 

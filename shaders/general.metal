@@ -28,7 +28,8 @@ VertexOutput vertex vertexMainGeneral(
 
 half4 fragment fragmentMainGeneral(VertexOutput input [[stage_in]]) {
     /* assume light coming from (front-top-right), Lambertian reflectance */
-    float3 l = normalize(float3(1.0, 1.0, 0.8));
-    float3 n = normalize(input.normal);
-    return half4(input.color * (0.1 + saturate(dot(n, l))), 1.0);
+    // float3 l = normalize(float3(1.0, 1.0, 0.8));
+    // float3 n = normalize(input.normal);
+    // return half4(input.color * (0.1 + saturate(dot(n, l))), 1.0);
+    return half4(input.color, 1.0);
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Project
-project(3DFractalGenerator)
+project(MetalEngine)
 
 # Sources
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.c)

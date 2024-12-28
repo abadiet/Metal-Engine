@@ -81,8 +81,8 @@ void Renderer::draw(MTK::View* view) {
         const auto object = scene->get_object(i);
         simd::float4x4 transform = object->get_transform();
         encoder->setVertexBytes(&transform, sizeof(transform), 1);
-        encoder->setVertexBuffer(object->get_mesh()->getVertexBuffer(), 0, 0);
-        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 6, MTL::IndexType::IndexTypeUInt16, object->get_mesh()->getIndexBuffer(), 0, 6);
+        encoder->setVertexBuffer(object->getMesh()->getVertexBuffer(), 0, 0);
+        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, object->getMesh()->getIndexCount(), MTL::IndexType::IndexTypeUInt16, object->getMesh()->getIndexBuffer(), 0);
     }
 
     encoder->endEncoding();

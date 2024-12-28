@@ -15,11 +15,13 @@ class Mesh {
         ~Mesh();
         MTL::Buffer* getVertexBuffer();
         MTL::Buffer* getIndexBuffer();
+        size_t getIndexCount();
 
     private:
         static MTL::VertexDescriptor *vertexDescriptor;
 
         MTL::Buffer *vertexBuffer, *indexBuffer;
+        size_t indexCount;
 };
 
 #endif /* MESH_FACTORY_HPP */

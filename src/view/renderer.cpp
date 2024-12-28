@@ -68,18 +68,17 @@ void Renderer::draw(MTK::View* view) {
     MTL::RenderPassDescriptor* renderPass = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-    scene->get_camera(0)->rotate({0.0f, 0.0f, 0.01f});
+    scene->get_camera(0)->mvmt_circle({0.0f, 0.0f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
     simd::float4x4 view_cam = scene->get_camera(0)->view_matrix();
     encoder->setVertexBytes(&view_cam, sizeof(view_cam), 2);
 
     encoder->setRenderPipelineState(generalPipeline);
     encoder->setDepthStencilState(depthStencilState);
-    encoder->setCullMode(MTL::CullModeBack);
-    encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
+    // encoder->setCullMode(MTL::CullModeBack);
+    // encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
     for (size_t i = 0; i < scene->get_object_count(); i++) {
         const auto object = scene->get_object(i);
-        object->rotate({0.0f, 0.01f, 0.0f});
         simd::float4x4 transform = object->get_transform();
         encoder->setVertexBytes(&transform, sizeof(transform), 1);
         encoder->setVertexBuffer(object->get_mesh()->getVertexBuffer(), 0, 0);

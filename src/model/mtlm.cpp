@@ -11,9 +11,9 @@ simd::float4x4 mtlm::identity() {
 
 simd::float4x4 mtlm::translation(simd::float3 dPos) {
     return simd::float4x4{
-        simd::float4{1.0f, 0.0f, 0.0f, 0.0f},
-        simd::float4{0.0f, 1.0f, 0.0f, 0.0f},
-        simd::float4{0.0f, 0.0f, 1.0f, 0.0f},
+        simd::float4{   1.0f,    0.0f,    0.0f, 0.0f},
+        simd::float4{   0.0f,    1.0f,    0.0f, 0.0f},
+        simd::float4{   0.0f,    0.0f,    1.0f, 0.0f},
         simd::float4{dPos[0], dPos[1], dPos[2], 1.0f}
     };
 }
@@ -56,4 +56,10 @@ simd::float4x4 mtlm::perspective_projection(float fovy, float aspect, float near
         simd::float4{ 0.0f, 0.0f,    C, 1.0f},
         simd::float4{ 0.0f, 0.0f,    D, 0.0f}
     };
+}
+
+simd::float3 mtlm::angles_between(simd::float3 v1, simd::float3 v2) {
+    const simd::float3 axis = simd::normalize(simd::cross(v1, v2));
+    const float angle = acos(simd::dot(v1, v2) / (simd::length(v1) * simd::length(v2)));
+    return axis * angle;
 }

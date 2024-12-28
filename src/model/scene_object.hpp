@@ -4,9 +4,10 @@
 #include <simd/simd.h>
 #include "view/mesh.hpp"
 #include "model/mtlm.hpp"
+#include "model/movement.hpp"
 
 
-class SceneObject {
+class SceneObject : public Movement {
 
     public:
         SceneObject();
@@ -15,16 +16,14 @@ class SceneObject {
         void set_mesh(Mesh *mesh);
         Mesh* get_mesh();
 
-        simd::float4x4 get_transform();
-        void set_transform(simd::float4x4 transform);
-
-        void translate(simd::float3 dPos);
-        void rotate(simd::float3 dAngles);
+        void set_scale(simd::float3 dRatios);
         void scale(simd::float3 dRatios);
+
+        simd::float4x4 get_transform();
 
     private:
         Mesh *mesh;
-        simd::float4x4 transform;
+        simd::float4x4 scale_matrix;
 
 };
 

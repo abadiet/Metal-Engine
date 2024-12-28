@@ -36,8 +36,6 @@ class Renderer {
         MTL::RenderPipelineState *generalPipeline;
         std::vector<Mesh> meshes;
 
-        float rotation = 0.0f;
-
 };
 
 #endif /* RENDERER_HPP */

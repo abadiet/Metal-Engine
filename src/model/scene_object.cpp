@@ -3,7 +3,7 @@
 
 SceneObject::SceneObject() {
     mesh = nullptr;
-    transform = mtlm::identity();
+    scale_matrix = mtlm::identity();
 }
 
 SceneObject::~SceneObject() {}
@@ -17,21 +17,13 @@ Mesh* SceneObject::get_mesh() {
 }
 
 simd::float4x4 SceneObject::get_transform() {
-    return transform;
+    return get_movement_matrix() * scale_matrix;
 }
 
-void SceneObject::set_transform(simd::float4x4 transform) {
-    this->transform = transform;
+void SceneObject::set_scale(simd::float3 ratios) {
+    scale_matrix = mtlm::scale(ratios);
 }
 
-void SceneObject::rotate(simd::float3 angles) {
-    transform = mtlm::rotation(angles) * transform;
-}
-
-void SceneObject::translate(simd::float3 dPos) {
-    transform = mtlm::translation(dPos) * transform;
-}
-
-void SceneObject::scale(simd::float3 ratios) {
-    transform = mtlm::scale(ratios) * transform;
+void SceneObject::scale(simd::float3 dRatios) {
+    scale_matrix = mtlm::scale(dRatios) * scale_matrix;
 }

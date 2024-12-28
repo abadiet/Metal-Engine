@@ -11,18 +11,18 @@ Renderer::Renderer(MTL::Device* device):
 
     const size_t camId = scene->add_camera();
     scene->get_camera(camId)->set_position({0.0f, 0.0f, 0.0f});
-    scene->get_camera(camId)->set_rotation({0.0f, 0.0f, 0.0f});
+    scene->get_camera(camId)->set_orientation({0.0f, 0.0f, 0.0f});
     scene->get_camera(camId)->set_projection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
     const size_t objId = scene->add_object();
     scene->get_object(objId)->set_mesh(&meshes[1]);
-    scene->get_object(objId)->scale({0.1f, 0.1f, 0.1f});
-    scene->get_object(objId)->rotate({0.0f, 0.0f, 0.5f});
-    scene->get_object(objId)->translate({0.5f, 0.5f, 2.0f});
+    scene->get_object(objId)->set_scale({0.1f, 0.1f, 0.1f});
+    scene->get_object(objId)->set_orientation({0.0f, 0.0f, 0.5f});
+    scene->get_object(objId)->set_position({0.5f, 0.5f, 2.0f});
 
     const size_t objId2 = scene->add_object();
     scene->get_object(objId2)->set_mesh(&meshes[1]);
-    scene->get_object(objId2)->translate({0.0f, 0.0f, 3.0f});
+    scene->get_object(objId2)->set_position({0.0f, 0.0f, 3.0f});
 
 }
 
@@ -68,9 +68,8 @@ void Renderer::draw(MTK::View* view) {
     MTL::RenderPassDescriptor* renderPass = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-    scene->get_camera(0)->set_rotation({0.0f, 0.0f, rotation});
+    scene->get_camera(0)->rotate({0.0f, 0.0f, 0.01f});
     simd::float4x4 view_cam = scene->get_camera(0)->view_matrix();
-    rotation += 0.01f;
     encoder->setVertexBytes(&view_cam, sizeof(view_cam), 2);
 
     encoder->setRenderPipelineState(generalPipeline);
@@ -79,10 +78,12 @@ void Renderer::draw(MTK::View* view) {
     encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
     for (size_t i = 0; i < scene->get_object_count(); i++) {
-        simd::float4x4 transform = scene->get_object(i)->get_transform();
+        const auto object = scene->get_object(i);
+        object->rotate({0.0f, 0.01f, 0.0f});
+        simd::float4x4 transform = object->get_transform();
         encoder->setVertexBytes(&transform, sizeof(transform), 1);
-        encoder->setVertexBuffer(scene->get_object(i)->get_mesh()->getVertexBuffer(), 0, 0);
-        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 6, MTL::IndexType::IndexTypeUInt16, scene->get_object(i)->get_mesh()->getIndexBuffer(), 0, 6);
+        encoder->setVertexBuffer(object->get_mesh()->getVertexBuffer(), 0, 0);
+        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, 6, MTL::IndexType::IndexTypeUInt16, object->get_mesh()->getIndexBuffer(), 0, 6);
     }
 
     encoder->endEncoding();

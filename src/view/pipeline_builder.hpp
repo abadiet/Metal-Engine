@@ -10,10 +10,10 @@ class PipelineBuilder {
     public:
         PipelineBuilder(MTL::Device* device);
         ~PipelineBuilder();
-        void set_filename(const char* filename);
-        void set_vertex_entry_point(const char* entryPoint);
-        void set_fragment_entry_point(const char* entryPoint);
-        void set_vertex_descriptor(MTL::VertexDescriptor* descriptor);
+        void setFilename(const char* filename);
+        void setVertexEntryPoint(const char* entryPoint);
+        void setFragmentEntryPoint(const char* entryPoint);
+        void setVertexDescriptor(MTL::VertexDescriptor* descriptor);
         MTL::RenderPipelineState* build();
 
     private:

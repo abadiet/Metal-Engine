@@ -5,28 +5,28 @@ Scene::Scene() {}
 
 Scene::~Scene() {}
 
-size_t Scene::add_camera() {
+size_t Scene::addCamera() {
     cameras.push_back(Camera());
     return cameras.size() - 1;
 }
 
-Camera* Scene::get_camera(size_t index) {
+Camera* Scene::getCamera(size_t index) {
     return &cameras[index];
 }
 
-size_t Scene::get_camera_count() {
+size_t Scene::getCameraCount() {
     return cameras.size();
 }
 
-size_t Scene::add_object() {
+size_t Scene::addObject() {
     objects.push_back(SceneObject());
     return objects.size() - 1;
 }
 
-SceneObject* Scene::get_object(size_t index) {
+SceneObject* Scene::getObject(size_t index) {
     return &objects[index];
 }
 
-size_t Scene::get_object_count() {
+size_t Scene::getObjectCount() {
     return objects.size();
 }

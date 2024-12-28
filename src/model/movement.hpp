@@ -11,21 +11,21 @@ class Movement {
         Movement();
         ~Movement();
 
-        void set_position(simd::float3 position);
-        simd::float3 get_position();
+        void setPosition(simd::float3 position);
+        simd::float3 getPosition();
 
-        void set_orientation(simd::float3 orientation);
+        void setOrientation(simd::float3 orientation);
 
         void translate(simd::float3 dPos);
         void rotate(simd::float3 dAngles);
 
-        void mvmt_circle(simd::float3 center, simd::float3 axis, float speed);
+        void mvmtCircle(simd::float3 center, simd::float3 axis, float speed);
 
-        simd::float4x4 get_movement_matrix();
+        simd::float4x4 getMovementMatrix();
 
     private:
-        simd::float4x4 translation_matrix;
-        simd::float4x4 rotation_matrix;
+        simd::float4x4 translationMatrix;
+        simd::float4x4 rotationMatrix;
 
 };
 

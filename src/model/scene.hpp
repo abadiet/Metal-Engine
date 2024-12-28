@@ -12,13 +12,13 @@ class Scene {
         Scene();
         ~Scene();
 
-        size_t add_camera();
-        Camera* get_camera(size_t index);
-        size_t get_camera_count();
+        size_t addCamera();
+        Camera* getCamera(size_t index);
+        size_t getCameraCount();
 
-        size_t add_object();
-        SceneObject* get_object(size_t index);
-        size_t get_object_count();
+        size_t addObject();
+        SceneObject* getObject(size_t index);
+        size_t getObjectCount();
 
     private:
         std::vector<Camera> cameras;

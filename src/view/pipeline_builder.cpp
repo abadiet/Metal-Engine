@@ -8,19 +8,19 @@ PipelineBuilder::~PipelineBuilder() {
     device->release();
 }
 
-void PipelineBuilder::set_filename(const char* filename) {
+void PipelineBuilder::setFilename(const char* filename) {
     this->filename = filename;
 }
 
-void PipelineBuilder::set_vertex_entry_point(const char* entryPoint) {
+void PipelineBuilder::setVertexEntryPoint(const char* entryPoint) {
     this->vertexEntryPoint = entryPoint;
 }
 
-void PipelineBuilder::set_fragment_entry_point(const char* entryPoint) {
+void PipelineBuilder::setFragmentEntryPoint(const char* entryPoint) {
     this->fragmentEntryPoint = entryPoint;
 }
 
-void PipelineBuilder::set_vertex_descriptor(MTL::VertexDescriptor* descriptor) {
+void PipelineBuilder::setVertexDescriptor(MTL::VertexDescriptor* descriptor) {
     if (this->vertexDescriptor) {
         this->vertexDescriptor->release();
     }

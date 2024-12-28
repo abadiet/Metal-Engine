@@ -67,7 +67,7 @@ Mesh Mesh::buildQuad(MTL::Device* device) {
     memcpy(mesh.vertexBuffer->contents(), vertices, 8 * sizeof(Vertex));
     
     mesh.indexCount = 12;
-    
+
     mesh.indexBuffer = device->newBuffer(mesh.indexCount * sizeof(indices), MTL::ResourceStorageModeShared);
     memcpy(mesh.indexBuffer->contents(), indices, mesh.indexCount * sizeof(indices));
     

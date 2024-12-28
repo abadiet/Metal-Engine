@@ -13,17 +13,17 @@ class SceneObject : public Movement {
         SceneObject();
         ~SceneObject();
 
-        void set_mesh(Mesh *mesh);
-        Mesh* get_mesh();
+        void setMesh(Mesh *mesh);
+        Mesh* getMesh();
 
-        void set_scale(simd::float3 dRatios);
+        void setScale(simd::float3 dRatios);
         void scale(simd::float3 dRatios);
 
-        simd::float4x4 get_transform();
+        simd::float4x4 getTransform();
 
     private:
         Mesh *mesh;
-        simd::float4x4 scale_matrix;
+        simd::float4x4 scaleMatrix;
 
 };
 

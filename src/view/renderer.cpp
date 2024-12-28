@@ -9,20 +9,20 @@ Renderer::Renderer(MTL::Device* device):
     buildShaders();
     buildDepthStencilState();
 
-    const size_t camId = scene->add_camera();
-    scene->get_camera(camId)->set_position({0.0f, 0.0f, 0.0f});
-    scene->get_camera(camId)->set_orientation({0.0f, 0.0f, 0.0f});
-    scene->get_camera(camId)->set_projection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
+    const size_t camId = scene->addCamera();
+    scene->getCamera(camId)->setPosition({0.0f, 0.0f, 0.0f});
+    scene->getCamera(camId)->setOrientation({0.0f, 0.0f, 0.0f});
+    scene->getCamera(camId)->setProjection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
-    const size_t objId = scene->add_object();
-    scene->get_object(objId)->set_mesh(&meshes[1]);
-    scene->get_object(objId)->set_scale({0.1f, 0.1f, 0.1f});
-    scene->get_object(objId)->set_orientation({0.0f, 0.0f, 0.5f});
-    scene->get_object(objId)->set_position({0.5f, 0.5f, 2.0f});
+    const size_t objId = scene->addObject();
+    scene->getObject(objId)->setMesh(&meshes[1]);
+    scene->getObject(objId)->setScale({0.1f, 0.1f, 0.1f});
+    scene->getObject(objId)->setOrientation({0.0f, 0.0f, 0.5f});
+    scene->getObject(objId)->setPosition({0.5f, 0.5f, 2.0f});
 
-    const size_t objId2 = scene->add_object();
-    scene->get_object(objId2)->set_mesh(&meshes[1]);
-    scene->get_object(objId2)->set_position({0.0f, 0.0f, 3.0f});
+    const size_t objId2 = scene->addObject();
+    scene->getObject(objId2)->setMesh(&meshes[1]);
+    scene->getObject(objId2)->setPosition({0.0f, 0.0f, 3.0f});
 
 }
 
@@ -43,10 +43,10 @@ void Renderer::buildMeshes() {
 void Renderer::buildShaders() {
     PipelineBuilder builder(device);
 
-    builder.set_vertex_descriptor(Mesh::buildVertexDescriptor());
-    builder.set_filename("../shaders/general.metal");
-    builder.set_vertex_entry_point("vertexMainGeneral");
-    builder.set_fragment_entry_point("fragmentMainGeneral");
+    builder.setVertexDescriptor(Mesh::buildVertexDescriptor());
+    builder.setFilename("../shaders/general.metal");
+    builder.setVertexEntryPoint("vertexMainGeneral");
+    builder.setFragmentEntryPoint("fragmentMainGeneral");
     generalPipeline = builder.build();
 }
 
@@ -68,18 +68,18 @@ void Renderer::draw(MTK::View* view) {
     MTL::RenderPassDescriptor* renderPass = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-    scene->get_camera(0)->mvmt_circle({0.0f, 0.0f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    simd::float4x4 view_cam = scene->get_camera(0)->view_matrix();
-    encoder->setVertexBytes(&view_cam, sizeof(view_cam), 2);
+    scene->getCamera(0)->mvmtCircle({0.0f, 0.0f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
+    simd::float4x4 viewCam = scene->getCamera(0)->viewMatrix();
+    encoder->setVertexBytes(&viewCam, sizeof(viewCam), 2);
 
     encoder->setRenderPipelineState(generalPipeline);
     encoder->setDepthStencilState(depthStencilState);
-    // encoder->setCullMode(MTL::CullModeBack);
-    // encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
+    encoder->setCullMode(MTL::CullModeFront);
+    encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    for (size_t i = 0; i < scene->get_object_count(); i++) {
-        const auto object = scene->get_object(i);
-        simd::float4x4 transform = object->get_transform();
+    for (size_t i = 0; i < scene->getObjectCount(); i++) {
+        const auto object = scene->getObject(i);
+        simd::float4x4 transform = object->getTransform();
         encoder->setVertexBytes(&transform, sizeof(transform), 1);
         encoder->setVertexBuffer(object->getMesh()->getVertexBuffer(), 0, 0);
         encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, object->getMesh()->getIndexCount(), MTL::IndexType::IndexTypeUInt16, object->getMesh()->getIndexBuffer(), 0);

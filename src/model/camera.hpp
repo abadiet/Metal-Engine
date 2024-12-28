@@ -12,12 +12,12 @@ class Camera : public Movement {
         Camera();
         ~Camera();
 
-        void set_projection(float fovy, float aspect, float near, float far);
+        void setProjection(float fovy, float aspect, float near, float far);
 
-        simd::float4x4 view_matrix();
+        simd::float4x4 viewMatrix();
 
     private:
-        simd::float4x4 projection_matrix;
+        simd::float4x4 projectionMatrix;
 
 };
 

@@ -42,7 +42,7 @@ simd::float4x4 mtlm::scale(simd::float3 ratios) {
     };
 }
 
-simd::float4x4 mtlm::perspective_projection(float fovy, float aspect, float near, float far) {
+simd::float4x4 mtlm::perspectiveProjection(float fovy, float aspect, float near, float far) {
     fovy = fovy * 3.14159f / 360.0f;
 
     const float A = 1.0f / (tanf(fovy) * aspect);
@@ -58,7 +58,7 @@ simd::float4x4 mtlm::perspective_projection(float fovy, float aspect, float near
     };
 }
 
-simd::float3 mtlm::angles_between(simd::float3 v1, simd::float3 v2) {
+simd::float3 mtlm::anglesBetween(simd::float3 v1, simd::float3 v2) {
     const simd::float3 axis = simd::normalize(simd::cross(v1, v2));
     const float angle = acos(simd::dot(v1, v2) / (simd::length(v1) * simd::length(v2)));
     return axis * angle;

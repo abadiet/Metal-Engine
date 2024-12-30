@@ -1,12 +1,12 @@
 #include "view/renderer.hpp"
 
 Renderer::Renderer(MTL::Device* device):
+    MTK::ViewDelegate(),
     scene(new Scene()),
     device(device->retain())
 {
     commandQueue = device->newCommandQueue();
     buildMeshes();
-    buildShaders();
     buildDepthStencilState();
 
     const size_t camId = scene->addCamera();
@@ -14,46 +14,34 @@ Renderer::Renderer(MTL::Device* device):
     scene->getCamera(camId)->setOrientation({-0.5f, 0.0f, 0.0f});
     scene->getCamera(camId)->setProjection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
-    size_t objId = scene->addObject();
-    scene->getObject(objId)->setMesh(&meshes[1]);
-    scene->getObject(objId)->setScale({0.05f, 0.05f, 0.05f});
-    scene->getObject(objId)->setOrientation({0.0f, 2.0f, 0.5f});
-    scene->getObject(objId)->setPosition({0.5f, 0.5f, 2.0f});
+    size_t objId = scene->addElement();
+    scene->getElement(objId)->setRendererElement(&elements[1]);
+    scene->getElement(objId)->setScale({0.05f, 0.05f, 0.05f});
+    scene->getElement(objId)->setOrientation({0.0f, 2.0f, 0.5f});
+    scene->getElement(objId)->setPosition({0.5f, 0.5f, 2.0f});
 
-    objId = scene->addObject();
-    scene->getObject(objId)->setMesh(&meshes[1]);
-    scene->getObject(objId)->setScale({0.05f, 0.05f, 0.05f});
-    scene->getObject(objId)->setPosition({0.0f, 0.5f, 4.0f});
+    objId = scene->addElement();
+    scene->getElement(objId)->setRendererElement(&elements[1]);
+    scene->getElement(objId)->setScale({0.05f, 0.05f, 0.05f});
+    scene->getElement(objId)->setPosition({0.0f, 0.5f, 4.0f});
 
-    objId = scene->addObject();
-    scene->getObject(objId)->setMesh(&meshes[1]);
-    scene->getObject(objId)->setScale({0.5f, 0.5f, 0.5f});
-    scene->getObject(objId)->setPosition({0.0f, 0.0f, 3.0f});
+    objId = scene->addElement();
+    scene->getElement(objId)->setRendererElement(&elements[1]);
+    scene->getElement(objId)->setScale({0.5f, 0.5f, 0.5f});
+    scene->getElement(objId)->setPosition({0.0f, 0.0f, 3.0f});
 
 }
 
 Renderer::~Renderer() {
-    Mesh::releaseVertexDescriptor();
     depthStencilState->release();
-    generalPipeline->release();
     commandQueue->release();
     device->release();
     delete scene;
 }
 
 void Renderer::buildMeshes() {
-    meshes.push_back(Mesh::buildQuad(device));
-    meshes.push_back(Mesh::buildCube(device));
-}
-
-void Renderer::buildShaders() {
-    PipelineBuilder builder(device);
-
-    builder.setVertexDescriptor(Mesh::buildVertexDescriptor());
-    builder.setFilename("../shaders/general.metal");
-    builder.setVertexEntryPoint("vertexMainGeneral");
-    builder.setFragmentEntryPoint("fragmentMainGeneral");
-    generalPipeline = builder.build();
+    elements.push_back(RendererElement::BuildSquare(device));
+    elements.push_back(RendererElement::BuildCube(device));
 }
 
 void Renderer::buildDepthStencilState() {
@@ -66,7 +54,7 @@ void Renderer::buildDepthStencilState() {
     pDsDesc->release();
 }
 
-void Renderer::draw(MTK::View* view) {
+void Renderer::drawInMTKView(MTK::View* view) {
 
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
@@ -78,23 +66,24 @@ void Renderer::draw(MTK::View* view) {
     simd::float4x4 viewCam = scene->getCamera(0)->viewMatrix();
     encoder->setVertexBytes(&viewCam, sizeof(viewCam), 2);
 
-    encoder->setRenderPipelineState(generalPipeline);
     encoder->setDepthStencilState(depthStencilState);
     encoder->setCullMode(MTL::CullModeFront);
     encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    scene->getObject(0)->rotate({0.02f, 0.01f, 0.03f});
-    scene->getObject(0)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 0.0f, 1.0f}, 0.03f);
+    scene->getElement(0)->rotate({0.02f, 0.01f, 0.03f});
+    scene->getElement(0)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 0.0f, 1.0f}, 0.03f);
 
-    scene->getObject(1)->rotate({0.02f, 0.01f, 0.03f});
-    scene->getObject(1)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, 0.03f);
+    scene->getElement(1)->rotate({0.02f, 0.01f, 0.03f});
+    scene->getElement(1)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, 0.03f);
 
-    for (size_t i = 0; i < scene->getObjectCount(); i++) {
-        const auto object = scene->getObject(i);
-        simd::float4x4 transform = object->getTransform();
+    for (size_t i = 0; i < scene->getElementCount(); i++) {
+        const auto element = scene->getElement(i);
+        const auto rendererElement = element->getRendererElement();
+        encoder->setRenderPipelineState(rendererElement->getPipeline());
+        simd::float4x4 transform = element->getTransform();
         encoder->setVertexBytes(&transform, sizeof(transform), 1);
-        encoder->setVertexBuffer(object->getMesh()->getVertexBuffer(), 0, 0);
-        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, object->getMesh()->getIndexCount(), MTL::IndexType::IndexTypeUInt16, object->getMesh()->getIndexBuffer(), 0);
+        encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
+        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, rendererElement->getIndices().size(), MTL::IndexType::IndexTypeUInt16, rendererElement->getIndexBuffer(), 0);
     }
 
     encoder->endEncoding();

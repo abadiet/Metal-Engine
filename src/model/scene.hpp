@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "model/camera.hpp"
-#include "model/scene_object.hpp"
+#include "model/scene_element.hpp"
 
 
 class Scene {
@@ -16,13 +16,13 @@ class Scene {
         Camera* getCamera(size_t index);
         size_t getCameraCount();
 
-        size_t addObject();
-        SceneObject* getObject(size_t index);
-        size_t getObjectCount();
+        size_t addElement();
+        SceneElement* getElement(size_t index);
+        size_t getElementCount();
 
     private:
         std::vector<Camera> cameras;
-        std::vector<SceneObject> objects;
+        std::vector<SceneElement> elements;
 
 };
 

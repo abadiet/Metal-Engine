@@ -5,7 +5,7 @@
 
 #include <Foundation/Foundation.hpp>
 #include <AppKit/AppKit.hpp>
-#include "control/app_delegate.hpp"
+#include "controller/app_delegate.hpp"
 
 #define UNUSED(x) (void)(x)
 

@@ -1,0 +1,127 @@
+@startuml
+
+skinparam groupinheritance 2
+
+package controller <<Rectangle>> {
+    class AppDelegate {
+        -NS::Window* window
+        -MTK::View* mtkView
+        -MTL::Device* device
+        +virtual void applicationWillFinishLaunching(NS::Notification* notification) override
+        +virtual void applicationDidFinishLaunching(NS::Notification* notification) override
+        +virtual bool applicationShouldTerminateAfterLastWindowClosed(NS::Application* sender) override
+    }
+}
+
+package view <<Rectangle>> {
+    class Renderer {
+        -MTL::Device* device
+        -MTL::CommandQueue* commandQueue
+        -MTL::DepthStencilState* depthStencilState
+        +virtual void drawInMTKView(MTK::View* view) override
+        -void buildMeshes()
+        -void buildDepthStencilState()
+    }
+
+    class RendererElement extends Mesh, Colors {
+        -MTL::Buffer *buffer
+        -MTL::VertexDescriptor *descriptor
+        -MTL::RenderPipelineState *pipeline
+        -MTL::DepthStencilState *depthStencilState
+        +{static} RendererElement BuildSquare(MTL::Device* device)
+        +{static} RendererElement BuildCube(MTL::Device* device)
+        +void update(MTL::Device* device)
+        +MTL::RenderPipelineState* getPipeline() const
+        +void setPipeline(MTL::RenderPipelineState* pipeline)
+        +MTL::Buffer* getVertexBuffer() const
+        +MTL::Buffer* getIndexBuffer() const
+        -RendererElement()
+        -MTL::Buffer *vertexBuffer, *indexBuffer
+        -MTL::RenderPipelineState* pipeline
+    }
+
+    -struct RendererElement::CompleteVertex {
+        simd::float3 color
+    }
+
+    class Mesh {
+        -std::vector<ushort> indices
+        +std::vector<Vertex> getVertices() const
+        +void setVertices(const std::vector<Vertex>& vertices)
+        +std::vector<Vertex> getIndices() const
+        +void setIndices(const std::vector<ushort>& indices)
+    }
+
+    #struct Mesh::Vertex {
+        +simd::float3 position
+        +simd::float3 normal
+    }
+
+    class Colors {
+        -std::vector<simd::float3> colors
+        +void setColors(const std::vector<simd::float3>& colors)
+        +std::vector<simd::float3> getColors() const
+    }
+
+    class Pipeline {
+        -std::string filename, vertexEntry, fragmentEntry
+        -MTL::RenderPipelineState *pipeline
+        +{static} MTL::RenderPipelineState* Build(MTL::Device* device, const char* filename, const char* vertexEntry, const char* fragmentEntry, MTL::VertexDescriptor* descriptor)
+        +{static} MTL::RenderPipelineState* BuildGeneral(MTL::Device* device)
+        -Pipeline()
+    }
+
+    Renderer *--> RendererElement : elements 0..*
+    Mesh *--> Mesh::Vertex : vertices 0..*
+    RendererElement::CompleteVertex *--> Mesh::Vertex : vertex 1..1
+    RendererElement::CompleteVertex ..> RendererElement
+    Mesh::Vertex ..> Mesh
+    Pipeline #--> Pipeline: pipelines 0..* (static)
+    RendererElement --> Pipeline
+}
+
+package model <<Rectangle>> {
+    class Scene {
+        +size_t addCamera();
+        +Camera* getCamera(size_t index);
+        +size_t getCameraCount();
+        +size_t addElement();
+        +SceneElement* getElement(size_t index);
+        +size_t getElementCount();
+    }
+
+    abstract class Movement {
+        -simd::float4x4 translationMatrix
+        -simd::float4x4 rotationMatrix
+        +void setPosition(simd::float3 position)
+        +simd::float3 getPosition()
+        +void setOrientation(simd::float3 orientation)
+        +void translate(simd::float3 dPos)
+        +void rotate(simd::float3 dAngles)
+        +void mvmtCircle(simd::float3 center, simd::float3 axis, float speed)
+        +simd::float4x4 getMovementMatrix()
+    }
+
+    class Camera implements Movement {
+        - simd::float4x4 projectionMatrix
+        +void setProjection(float fovy, float aspect, float near, float far)
+        +simd::float4x4 viewMatrix()
+    }
+
+    class SceneElement implements Movement {
+        -simd::float4x4 scaleMatrix
+        +void setMesh(Mesh *mesh)
+        +Mesh* getMesh()
+        +void setScale(simd::float3 dRatios)
+        +void scale(simd::float3 dRatios)
+        +simd::float4x4 getTransform()
+    }
+
+    Scene *--> Camera : cameras 0..*
+    Scene *--> SceneElement : elements 0..*
+}
+
+Renderer o--> AppDelegate
+Scene o--> Renderer
+
+@enduml

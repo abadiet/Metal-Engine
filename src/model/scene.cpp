@@ -18,15 +18,15 @@ size_t Scene::getCameraCount() {
     return cameras.size();
 }
 
-size_t Scene::addObject() {
-    objects.push_back(SceneObject());
-    return objects.size() - 1;
+size_t Scene::addElement() {
+    elements.push_back(SceneElement());
+    return elements.size() - 1;
 }
 
-SceneObject* Scene::getObject(size_t index) {
-    return &objects[index];
+SceneElement* Scene::getElement(size_t index) {
+    return &elements[index];
 }
 
-size_t Scene::getObjectCount() {
-    return objects.size();
+size_t Scene::getElementCount() {
+    return elements.size();
 }

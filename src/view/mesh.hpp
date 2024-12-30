@@ -1,27 +1,32 @@
-#ifndef MESH_FACTORY_HPP
-#define MESH_FACTORY_HPP
+#ifndef MESH_HPP
+#define MESH_HPP
 
-#include <Metal/Metal.hpp>
 #include <simd/simd.h>
+#include <vector>
 
 
 class Mesh {
-    public:
-        static Mesh buildQuad(MTL::Device* device);
-        static Mesh buildCube(MTL::Device* device);
-        static MTL::VertexDescriptor* buildVertexDescriptor();
-        static void releaseVertexDescriptor();
 
+    protected:
+        struct Vertex {
+            simd::float3 position; /* (x,y,z) */
+            simd::float3 normal;   /* (x,y,z) */
+        };
+
+    public:
+        Mesh();
         ~Mesh();
-        MTL::Buffer* getVertexBuffer();
-        MTL::Buffer* getIndexBuffer();
-        size_t getIndexCount();
+
+        std::vector<Mesh::Vertex> getVertices() const;
+        void setVertices(const std::vector<Mesh::Vertex>& vertices);
+
+        std::vector<ushort> getIndices() const;
+        void setIndices(const std::vector<ushort>& indices);
 
     private:
-        static MTL::VertexDescriptor *vertexDescriptor;
+        std::vector<Vertex> vertices;
+        std::vector<ushort> indices;
 
-        MTL::Buffer *vertexBuffer, *indexBuffer;
-        size_t indexCount;
 };
 
-#endif /* MESH_FACTORY_HPP */
+#endif /* MESH_HPP */

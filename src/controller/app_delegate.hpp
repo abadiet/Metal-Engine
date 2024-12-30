@@ -5,7 +5,7 @@
 #include <AppKit/AppKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 #include <Metal/Metal.hpp>
-#include "control/view_delegate.hpp"
+#include "view/renderer.hpp"
 
 
 class AppDelegate : public NS::ApplicationDelegate {
@@ -21,7 +21,7 @@ class AppDelegate : public NS::ApplicationDelegate {
         NS::Window* window;
         MTK::View* mtkView;
         MTL::Device* device;
-        ViewDelegate* viewDelegate = nullptr;
+        Renderer* renderer = nullptr;
 
 };
 

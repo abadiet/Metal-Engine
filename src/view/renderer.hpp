@@ -6,26 +6,26 @@
 #include <MetalKit/MetalKit.hpp>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 #include <vector>
 
-#include "view/mesh.hpp"
-#include "view/pipeline_builder.hpp"
+#include "view/renderer_element.hpp"
+#include "view/pipeline.hpp"
 #include "model/mtlm.hpp"
 #include "model/scene.hpp"
 
 
-class Renderer {
+/* TODO: mv depth stencil to RendererElement */
+
+class Renderer : public MTK::ViewDelegate {
 
     public:
         Renderer(MTL::Device* device);
         ~Renderer();
-        void buildDepthStencilState();
-        void draw(MTK::View* view);
+        virtual void drawInMTKView(MTK::View* view) override;
 
     private:
         void buildMeshes();
-        void buildShaders();
+        void buildDepthStencilState();
 
         Scene *scene;
 
@@ -33,8 +33,7 @@ class Renderer {
         MTL::CommandQueue* commandQueue;
         MTL::DepthStencilState* depthStencilState;
 
-        MTL::RenderPipelineState *generalPipeline;
-        std::vector<Mesh> meshes;
+        std::vector<RendererElement> elements;
 
 };
 

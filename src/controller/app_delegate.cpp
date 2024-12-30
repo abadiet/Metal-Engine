@@ -1,4 +1,4 @@
-#include "control/app_delegate.hpp"
+#include "controller/app_delegate.hpp"
 
 #define UNUSED(x) (void)(x)
 
@@ -7,7 +7,7 @@ AppDelegate::~AppDelegate() {
     mtkView->release();
     window->release();
     device->release();
-    delete viewDelegate;
+    delete renderer;
 }
 
 void AppDelegate::applicationWillFinishLaunching(NS::Notification* notification) {
@@ -33,8 +33,8 @@ void AppDelegate::applicationDidFinishLaunching(NS::Notification* notification) 
     mtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
     mtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 0.6, 1.0));
 
-    viewDelegate = new ViewDelegate(device);
-    mtkView->setDelegate(viewDelegate);
+    renderer = new Renderer(device);
+    mtkView->setDelegate(renderer);
 
     window->setContentView(mtkView);
     window->setTitle(NS::String::string("Metal Engine", NS::StringEncoding::UTF8StringEncoding));

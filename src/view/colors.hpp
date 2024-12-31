@@ -7,8 +7,11 @@
 
 class Colors {
 
-    protected:
+    public:
         Colors();
+        Colors(Colors& colors);
+        Colors(std::vector<simd::float3> colors);
+        Colors(Colors&&) noexcept;
         ~Colors();
 
         void setColors(const std::vector<simd::float3>& colors);

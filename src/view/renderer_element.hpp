@@ -4,7 +4,7 @@
 #include <Metal/Metal.hpp>
 #include "view/mesh.hpp"
 #include "view/texture.hpp"
-#include "view/color.hpp"
+#include "view/colors.hpp"
 #include "view/pipeline.hpp"
 
 
@@ -14,7 +14,12 @@ class RendererElement : public Mesh/*, public Texture*/, public Colors {
         static RendererElement BuildSquare(MTL::Device* device);
         static RendererElement BuildCube(MTL::Device* device);
 
+        RendererElement();
+        RendererElement(MTL::Device* device, Mesh mesh, Colors colors, MTL::RenderPipelineState* pipeline);
+        RendererElement(RendererElement&&) noexcept;
+
         ~RendererElement();
+
 
         void update(MTL::Device* device);
 
@@ -30,10 +35,8 @@ class RendererElement : public Mesh/*, public Texture*/, public Colors {
             simd::float3 color;            
         };
 
-        RendererElement();
-
         MTL::Buffer *vertexBuffer, *indexBuffer;
-        MTL::RenderPipelineState* pipeline;
+        MTL::RenderPipelineState *pipeline;
 
 };
 

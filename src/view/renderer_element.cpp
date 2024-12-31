@@ -1,8 +1,6 @@
 #include "view/renderer_element.hpp"
 
 RendererElement RendererElement::BuildSquare(MTL::Device* device) {
-    RendererElement obj;
-
     std::vector<Vertex> vertices = {
         {{-0.75f, -0.75f,  0.0f}, {0.0f, 0.0f, 1.0f}},
         {{ 0.75f, -0.75f,  0.0f}, {0.0f, 0.0f, 1.0f}},
@@ -30,20 +28,10 @@ RendererElement RendererElement::BuildSquare(MTL::Device* device) {
         simd::float3{0.0f, 1.0f, 0.0f}
     };
 
-    obj.setVertices(vertices);
-    obj.setIndices(indices);
-    obj.setColors(colors);
-
-    obj.update(device);
-
-    obj.setPipeline(Pipeline::BuildGeneral(device));
-
-    return obj;
+    return RendererElement(device, Mesh(vertices, indices), Colors(colors), Pipeline::BuildGeneral(device));
 }
 
 RendererElement RendererElement::BuildCube(MTL::Device* device) {
-    RendererElement obj;
-
     const float s = 0.75f;
     std::vector<Vertex> vertices = {
         { { -s, -s, +s }, { 0.f,  0.f,  1.f } },
@@ -118,15 +106,30 @@ RendererElement RendererElement::BuildCube(MTL::Device* device) {
         simd::float3{ 1.f,  1.f,  0.f }
     };
 
-    obj.setVertices(vertices);
-    obj.setIndices(indices);
-    obj.setColors(colors);
+    return RendererElement(device, Mesh(vertices, indices), Colors(colors), Pipeline::BuildGeneral(device));
+}
 
-    obj.update(device);
+RendererElement::RendererElement() {}
 
-    obj.setPipeline(Pipeline::BuildGeneral(device));
+RendererElement::RendererElement(MTL::Device* device, Mesh mesh, Colors colors, MTL::RenderPipelineState* pipeline):
+    Mesh(mesh),
+    Colors(colors)
+{
+    update(device);
+    setPipeline(pipeline);
+}
 
-    return obj;
+RendererElement::RendererElement(RendererElement&& other) noexcept:
+    Mesh(std::move(other)),
+    Colors(std::move(other))
+{
+    vertexBuffer = other.vertexBuffer;
+    indexBuffer = other.indexBuffer;
+    pipeline = other.pipeline;
+
+    other.vertexBuffer = nullptr;
+    other.indexBuffer = nullptr;
+    other.pipeline = nullptr;
 }
 
 RendererElement::~RendererElement() {
@@ -178,5 +181,3 @@ MTL::Buffer* RendererElement::getVertexBuffer() const {
 MTL::Buffer* RendererElement::getIndexBuffer() const {
     return indexBuffer;
 }
-
-RendererElement::RendererElement() {}

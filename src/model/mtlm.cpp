@@ -43,13 +43,10 @@ simd::float4x4 mtlm::scale(simd::float3 ratios) {
 }
 
 simd::float4x4 mtlm::perspectiveProjection(float fovy, float aspect, float near, float far) {
-    fovy = fovy * 3.14159f / 360.0f;
-
     const float A = 1.0f / (tanf(fovy) * aspect);
     const float B = 1.0f / (tanf(fovy));
     const float C = far / (far - near);
     const float D = -near * far / (far - near);
-
     return simd::float4x4{
         simd::float4{    A, 0.0f, 0.0f, 0.0f},
         simd::float4{ 0.0f,    B, 0.0f, 0.0f},

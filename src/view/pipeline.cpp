@@ -6,7 +6,6 @@ MTL::RenderPipelineState* Pipeline::Build(MTL::Device* device, const char* filen
     std::ifstream file;
     std::stringstream reader;
     std::string raw_string;
-    NS::String *sourceCode, *vertexName, *fragmentName;
     NS::Error* error;
     MTL::CompileOptions* options;
     MTL::Library* library;
@@ -32,7 +31,7 @@ MTL::RenderPipelineState* Pipeline::Build(MTL::Device* device, const char* filen
     file.open(pipelines.back().filename);
     reader << file.rdbuf();
     raw_string = reader.str();
-    sourceCode = NS::String::string(raw_string.c_str(), NS::StringEncoding::UTF8StringEncoding);
+    const NS::String *sourceCode = NS::String::string(raw_string.c_str(), NS::StringEncoding::UTF8StringEncoding);
 
     error = nullptr;
     options = nullptr;
@@ -41,10 +40,10 @@ MTL::RenderPipelineState* Pipeline::Build(MTL::Device* device, const char* filen
         throw std::runtime_error(error->localizedDescription()->utf8String());
     }
 
-    vertexName = NS::String::string(pipelines.back().vertexEntry.c_str(), NS::StringEncoding::UTF8StringEncoding);
+    const NS::String *vertexName = NS::String::string(pipelines.back().vertexEntry.c_str(), NS::StringEncoding::UTF8StringEncoding);
     vertexMain = library->newFunction(vertexName);
 
-    fragmentName = NS::String::string(pipelines.back().fragmentEntry.c_str(), NS::StringEncoding::UTF8StringEncoding);
+    const NS::String *fragmentName = NS::String::string(pipelines.back().fragmentEntry.c_str(), NS::StringEncoding::UTF8StringEncoding);
     fragmentMain = library->newFunction(fragmentName);
 
     pipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();

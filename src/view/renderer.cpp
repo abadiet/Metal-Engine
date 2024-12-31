@@ -5,31 +5,32 @@ Renderer::Renderer(MTL::Device* device):
     scene(new Scene()),
     device(device->retain())
 {
+    size_t id;
+
     commandQueue = device->newCommandQueue();
     buildMeshes();
     buildDepthStencilState();
 
-    const size_t camId = scene->addCamera();
-    scene->getCamera(camId)->setPosition({0.0f, 1.5f, 0.0f});
-    scene->getCamera(camId)->setOrientation({-0.5f, 0.0f, 0.0f});
-    scene->getCamera(camId)->setProjection(45.0f, 4.0f / 3.0f, 0.1f, 10.0f);
+    id = scene->addCamera();
+    scene->getCamera(id)->setPosition({0.0f, 1.5f, 0.0f});
+    scene->getCamera(id)->setOrientation({-0.5f, 0.0f, 0.0f});
+    scene->getCamera(id)->setProjection(3.14f / 8.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
-    size_t objId = scene->addElement();
-    scene->getElement(objId)->setRendererElement(&elements[1]);
-    scene->getElement(objId)->setScale({0.05f, 0.05f, 0.05f});
-    scene->getElement(objId)->setOrientation({0.0f, 2.0f, 0.5f});
-    scene->getElement(objId)->setPosition({0.5f, 0.5f, 2.0f});
+    id = scene->addElement();
+    scene->getElement(id)->setRendererElement(&elements[1]);
+    scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
+    scene->getElement(id)->setOrientation({0.0f, 2.0f, 0.5f});
+    scene->getElement(id)->setPosition({0.5f, 0.5f, 2.0f});
 
-    objId = scene->addElement();
-    scene->getElement(objId)->setRendererElement(&elements[1]);
-    scene->getElement(objId)->setScale({0.05f, 0.05f, 0.05f});
-    scene->getElement(objId)->setPosition({0.0f, 0.5f, 4.0f});
+    id = scene->addElement();
+    scene->getElement(id)->setRendererElement(&elements[1]);
+    scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
+    scene->getElement(id)->setPosition({0.0f, 0.5f, 4.0f});
 
-    objId = scene->addElement();
-    scene->getElement(objId)->setRendererElement(&elements[1]);
-    scene->getElement(objId)->setScale({0.5f, 0.5f, 0.5f});
-    scene->getElement(objId)->setPosition({0.0f, 0.0f, 3.0f});
-
+    id = scene->addElement();
+    scene->getElement(id)->setRendererElement(&elements[1]);
+    scene->getElement(id)->setScale({0.5f, 0.5f, 0.5f});
+    scene->getElement(id)->setPosition({0.0f, 0.0f, 3.0f});
 }
 
 Renderer::~Renderer() {
@@ -55,15 +56,20 @@ void Renderer::buildDepthStencilState() {
 }
 
 void Renderer::drawInMTKView(MTK::View* view) {
+    NS::AutoreleasePool* pool;
+    MTL::CommandBuffer* commandBuffer;
+    MTL::RenderPassDescriptor* renderPass;
+    MTL::RenderCommandEncoder* encoder;
+    size_t i;
 
-    NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
+    pool = NS::AutoreleasePool::alloc()->init();
 
-    MTL::CommandBuffer* commandBuffer = commandQueue->commandBuffer();
-    MTL::RenderPassDescriptor* renderPass = view->currentRenderPassDescriptor();
-    MTL::RenderCommandEncoder* encoder = commandBuffer->renderCommandEncoder(renderPass);
+    commandBuffer = commandQueue->commandBuffer();
+    renderPass = view->currentRenderPassDescriptor();
+    encoder = commandBuffer->renderCommandEncoder(renderPass);
 
     scene->getCamera(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    simd::float4x4 viewCam = scene->getCamera(0)->viewMatrix();
+    const simd::float4x4 viewCam = scene->getCamera(0)->viewMatrix();
     encoder->setVertexBytes(&viewCam, sizeof(viewCam), 2);
 
     encoder->setDepthStencilState(depthStencilState);
@@ -76,11 +82,11 @@ void Renderer::drawInMTKView(MTK::View* view) {
     scene->getElement(1)->rotate({0.02f, 0.01f, 0.03f});
     scene->getElement(1)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, 0.03f);
 
-    for (size_t i = 0; i < scene->getElementCount(); i++) {
+    for (i = 0; i < scene->getElementCount(); i++) {
         const auto element = scene->getElement(i);
         const auto rendererElement = element->getRendererElement();
         encoder->setRenderPipelineState(rendererElement->getPipeline());
-        simd::float4x4 transform = element->getTransform();
+        const simd::float4x4 transform = element->getTransform();
         encoder->setVertexBytes(&transform, sizeof(transform), 1);
         encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
         encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, rendererElement->getIndices().size(), MTL::IndexType::IndexTypeUInt16, rendererElement->getIndexBuffer(), 0);

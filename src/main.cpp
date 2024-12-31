@@ -11,12 +11,13 @@
 
 
 int main(int argc, char* argv[]){
-
-    NS::AutoreleasePool* autoreleasePool = NS::AutoreleasePool::alloc()->init();
-
+    NS::AutoreleasePool* autoreleasePool;
+    NS::Application* app;
     AppDelegate controller;
 
-    NS::Application* app = NS::Application::sharedApplication();
+    autoreleasePool = NS::AutoreleasePool::alloc()->init();
+
+    app = NS::Application::sharedApplication();
     app->setDelegate(&controller);
     app->run();
 

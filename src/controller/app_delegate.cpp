@@ -16,7 +16,9 @@ void AppDelegate::applicationWillFinishLaunching(NS::Notification* notification)
 }
 
 void AppDelegate::applicationDidFinishLaunching(NS::Notification* notification) {
+    NS::Application* app;
     CGRect frame;
+
     frame.origin = {100.0, 100.0};
     frame.size = {1000.0, 750.0};
 
@@ -40,7 +42,7 @@ void AppDelegate::applicationDidFinishLaunching(NS::Notification* notification) 
     window->setTitle(NS::String::string("Metal Engine", NS::StringEncoding::UTF8StringEncoding));
     window->makeKeyAndOrderFront(nullptr);
 
-    NS::Application* app = reinterpret_cast<NS::Application*>(notification->object());
+    app = reinterpret_cast<NS::Application*>(notification->object());
     app->activateIgnoringOtherApps(true);
 }
 

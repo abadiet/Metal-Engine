@@ -28,17 +28,17 @@ void Movement::rotate(simd::float3 dAngles) {
 }
 
 void Movement::mvmtCircle(simd::float3 center, simd::float3 axis, float speed) {
-    simd::float3 curRadius = getPosition() - center;
-    simd::float3 direction = simd::normalize(simd::cross(axis, curRadius)) * speed;
+    const simd::float3 curRadius = getPosition() - center;
+    const simd::float3 direction = simd::normalize(simd::cross(axis, curRadius)) * speed;
 
     /* slightly move the point pointed by direction to be on the circle */
-    simd::float3 wrongRadius = curRadius + direction;
-    simd::float3 newRadius = simd::normalize(wrongRadius) * simd::length(curRadius);
-    simd::float3 dPosition = newRadius - curRadius;
+    const simd::float3 wrongRadius = curRadius + direction;
+    const simd::float3 newRadius = simd::normalize(wrongRadius) * simd::length(curRadius);
+    const simd::float3 dPosition = newRadius - curRadius;
 
     translate(dPosition);
 
-    simd::float3 dAngles = mtlm::anglesBetween(newRadius, curRadius);
+    const simd::float3 dAngles = mtlm::anglesBetween(newRadius, curRadius);
     rotate(dAngles);
 }
 

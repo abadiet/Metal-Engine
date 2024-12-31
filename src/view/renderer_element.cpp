@@ -1,7 +1,7 @@
 #include "view/renderer_element.hpp"
 
 RendererElement RendererElement::BuildSquare(MTL::Device* device) {
-    std::vector<Vertex> vertices = {
+    const std::vector<Vertex> vertices = {
         {{-0.75f, -0.75f,  0.0f}, {0.0f, 0.0f, 1.0f}},
         {{ 0.75f, -0.75f,  0.0f}, {0.0f, 0.0f, 1.0f}},
         {{ 0.75f,  0.75f,  0.0f}, {0.0f, 0.0f, 1.0f}},
@@ -12,12 +12,12 @@ RendererElement RendererElement::BuildSquare(MTL::Device* device) {
         {{-0.75f,  0.75f, 0.75f}, {0.0f, 0.0f, 1.0f}}
     };
 
-    std::vector<ushort> indices = {
+    const std::vector<ushort> indices = {
         0, 1, 2, 2, 3, 0,
         4, 5, 6, 6, 7, 4
     };
 
-    std::vector<simd::float3> colors = {
+    const std::vector<simd::float3> colors = {
         simd::float3{1.0f, 0.0f, 0.0f},
         simd::float3{0.0f, 1.0f, 0.0f},
         simd::float3{0.0f, 0.0f, 1.0f},
@@ -33,7 +33,7 @@ RendererElement RendererElement::BuildSquare(MTL::Device* device) {
 
 RendererElement RendererElement::BuildCube(MTL::Device* device) {
     const float s = 0.75f;
-    std::vector<Vertex> vertices = {
+    const std::vector<Vertex> vertices = {
         { { -s, -s, +s }, { 0.f,  0.f,  1.f } },
         { { +s, -s, +s }, { 0.f,  0.f,  1.f } },
         { { +s, +s, +s }, { 0.f,  0.f,  1.f } },
@@ -65,7 +65,7 @@ RendererElement RendererElement::BuildCube(MTL::Device* device) {
         { { -s, -s, +s }, { 0.f, -1.f,  0.f } }
     };
 
-    std::vector<ushort> indices = {
+    const std::vector<ushort> indices = {
          0,  1,  2,  2,  3,  0, /* front */
          4,  5,  6,  6,  7,  4, /* right */
          8,  9, 10, 10, 11,  8, /* back */
@@ -74,7 +74,7 @@ RendererElement RendererElement::BuildCube(MTL::Device* device) {
         20, 21, 22, 22, 23, 20, /* bottom */
     };
 
-    std::vector<simd::float3> colors = {
+    const std::vector<simd::float3> colors = {
         simd::float3{ 1.f,  0.f,  1.f },
         simd::float3{ 0.f,  1.f,  1.f },
         simd::float3{ 1.f,  0.f,  0.f },

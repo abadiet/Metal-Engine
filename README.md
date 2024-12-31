@@ -13,11 +13,11 @@ https://github.com/user-attachments/assets/7f0891eb-a414-4af6-933e-6b485fd07627
 <img src="https://github.com/abadiet/Metal-Engine/blob/main/resources/class-diagram.png">
 
 ## Road Map
-- [ ] Lights
-- [ ] Textures
-- [ ] Cleaning
-- [ ] User Inputs?
-- [ ] Ray tracing
+- Fix Cocoa Memory Management
+- Lights
+- Textures
+- User Inputs?
+- Ray tracing
 
 ## Resources
 

@@ -68,6 +68,7 @@ MTL::RenderPipelineState* Pipeline::Build(MTL::Device* device, const char* filen
 }
 
 MTL::RenderPipelineState* Pipeline::BuildGeneral(MTL::Device* device) {
+    MTL::RenderPipelineState* pipeline;
     MTL::VertexDescriptor *vertexDescriptor = MTL::VertexDescriptor::alloc()->init();
 
     auto attributes = vertexDescriptor->attributes();
@@ -90,9 +91,46 @@ MTL::RenderPipelineState* Pipeline::BuildGeneral(MTL::Device* device) {
     auto layoutDescriptor = vertexDescriptor->layouts()->object(0);
     layoutDescriptor->setStride(12 * sizeof(float));
 
-    return Build(device, "../shaders/general.metal", "vertexMainGeneral", "fragmentMainGeneral", vertexDescriptor);
+    pipeline = Build(device, "../shaders/general.metal", "vertexMainGeneral", "fragmentMainGeneral", vertexDescriptor);
+
+    vertexDescriptor->release();
+
+    return pipeline;
 }
 
-Pipeline::~Pipeline() {}
+void Pipeline::Release() {
+    pipelines.clear();
+}
+
+Pipeline::Pipeline(const Pipeline& other) {
+    this->filename = other.filename;
+    this->vertexEntry = other.vertexEntry;
+    this->fragmentEntry = other.fragmentEntry;
+    if (this->pipeline) {
+        this->pipeline->release();
+    }
+    if (other.pipeline) {
+        this->pipeline = other.pipeline->retain();
+    }
+}
+
+Pipeline::Pipeline(Pipeline&& other) noexcept {
+    this->filename = other.filename;
+    this->vertexEntry = other.vertexEntry;
+    this->fragmentEntry = other.fragmentEntry;
+    if (this->pipeline) {
+        this->pipeline->release();
+    }
+    if (other.pipeline) {
+        this->pipeline = other.pipeline->retain();
+        other.pipeline->release();
+    }
+
+    other.pipeline = nullptr;
+}
+
+Pipeline::~Pipeline() {
+    pipeline->release();
+}
 
 Pipeline::Pipeline() {}

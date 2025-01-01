@@ -123,9 +123,27 @@ RendererElement::RendererElement(RendererElement&& other) noexcept:
     Mesh(std::move(other)),
     Colors(std::move(other))
 {
-    vertexBuffer = other.vertexBuffer;
-    indexBuffer = other.indexBuffer;
-    pipeline = other.pipeline;
+    if (vertexBuffer) {
+        vertexBuffer->release();
+    }
+    if (other.vertexBuffer) {
+        vertexBuffer = other.vertexBuffer->retain();
+        other.vertexBuffer->release();
+    }
+    if (indexBuffer) {
+        indexBuffer->release();
+    }
+    if (other.indexBuffer) {
+        indexBuffer = other.indexBuffer->retain();
+        other.indexBuffer->release();
+    }
+    if (pipeline) {
+        pipeline->release();
+    }
+    if (other.pipeline) {
+        pipeline = other.pipeline->retain();
+        other.pipeline->release();
+    }
 
     other.vertexBuffer = nullptr;
     other.indexBuffer = nullptr;
@@ -133,9 +151,15 @@ RendererElement::RendererElement(RendererElement&& other) noexcept:
 }
 
 RendererElement::~RendererElement() {
-    /* TODO */
-    // vertexBuffer->release();
-    // indexBuffer->release();
+    if (vertexBuffer) {
+        vertexBuffer->release();
+    }
+    if (indexBuffer) {
+        indexBuffer->release();
+    }
+    if (pipeline) {
+        pipeline->release();
+    }
 }
 
 void RendererElement::update(MTL::Device* device) {
@@ -171,7 +195,7 @@ MTL::RenderPipelineState* RendererElement::getPipeline() const {
 }
 
 void RendererElement::setPipeline(MTL::RenderPipelineState* pipeline) {
-    this->pipeline = pipeline;
+    this->pipeline = pipeline->retain();
 }
 
 MTL::Buffer* RendererElement::getVertexBuffer() const {

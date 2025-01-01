@@ -14,6 +14,10 @@ class Pipeline {
     public:
         static MTL::RenderPipelineState* Build(MTL::Device* device, const char* filename, const char* vertexEntry, const char* fragmentEntry, MTL::VertexDescriptor* descriptor);
         static MTL::RenderPipelineState* BuildGeneral(MTL::Device* device);
+        static void Release();
+
+        Pipeline(const Pipeline&);
+        Pipeline(Pipeline&&) noexcept;
 
         ~Pipeline();
 

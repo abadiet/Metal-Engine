@@ -18,6 +18,19 @@ size_t Scene::getCameraCount() {
     return cameras.size();
 }
 
+size_t Scene::addLight(MTL::Device* device) {
+    lights.push_back(Light(device));
+    return lights.size() - 1;
+}
+
+Light* Scene::getLight(size_t index) {
+    return &lights[index];
+}
+
+size_t Scene::getLightCount() {
+    return lights.size();
+}
+
 size_t Scene::addElement(MTL::Device* device) {
     elements.push_back(SceneElement(device));
     return elements.size() - 1;

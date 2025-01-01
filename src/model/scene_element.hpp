@@ -21,12 +21,13 @@ class SceneElement : public Movement {
         void setScale(simd::float3 dRatios);
         void scale(simd::float3 dRatios);
 
-        MTL::Buffer* getBuffer();
+        MTL::Buffer* getBufferPositionTransform();
+        MTL::Buffer* getBufferNormalTransform();
 
     private:
         RendererElement *rendererElement;
         simd::float4x4 scaleMatrix;
-        MTL::Buffer *buffer;
+        MTL::Buffer *bufferPositionTransform, *bufferNormalTransform;
 
 };
 

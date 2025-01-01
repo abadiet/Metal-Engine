@@ -18,8 +18,8 @@ Renderer::Renderer(MTL::Device* device):
 
     id = scene->addLight(device);
     scene->getLight(id)->setPosition({0.0f, 1.5f, 0.0f});
-    scene->getLight(id)->setColor({1.0f, 1.0f, 1.0f});
-    scene->getLight(id)->setIntensity(1.0f);
+    scene->getLight(id)->setColor({1.0f, 0.1f, 0.1f});
+    scene->getLight(id)->setIntensity(100.0f);
 
     id = scene->addElement(device);
     scene->getElement(id)->setRendererElement(&elements[1]);
@@ -73,7 +73,7 @@ void Renderer::drawInMTKView(MTK::View* view) {
     renderPass = view->currentRenderPassDescriptor();
     encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 2);
+    encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 3);
 
     scene->getLight(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
     scene->getLight(0)->update();
@@ -93,7 +93,8 @@ encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 2);
         const auto element = scene->getElement(i);
         const auto rendererElement = element->getRendererElement();
         encoder->setRenderPipelineState(rendererElement->getPipeline());
-        encoder->setVertexBuffer(element->getBuffer(), 0, 1);
+        encoder->setVertexBuffer(element->getBufferPositionTransform(), 0, 1);
+        encoder->setVertexBuffer(element->getBufferNormalTransform(), 0, 2);
         encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
         encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, rendererElement->getIndices().size(), MTL::IndexType::IndexTypeUInt16, rendererElement->getIndexBuffer(), 0);
     }

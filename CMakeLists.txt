@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 # Flags
 target_compile_options(${PROJECT_NAME} PRIVATE
-	-std=c++17 -O0 -g -Wall -Wextra -Werror -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wconversion -Wunreachable-code -Wpedantic
+	-std=c++17 -O3 -Wall -Wextra -Werror -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wconversion -Wunreachable-code -Wpedantic
 )
 
 # Include directories

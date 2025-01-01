@@ -17,7 +17,7 @@ class Pipeline {
         static void Release();
 
         Pipeline(const Pipeline&);
-        Pipeline(Pipeline&&) noexcept;
+        Pipeline(Pipeline&& other) noexcept;
 
         ~Pipeline();
 

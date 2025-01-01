@@ -12,11 +12,11 @@ class Scene {
         Scene();
         ~Scene();
 
-        size_t addCamera();
+        size_t addCamera(MTL::Device* device);
         Camera* getCamera(size_t index);
         size_t getCameraCount();
 
-        size_t addElement();
+        size_t addElement(MTL::Device* device);
         SceneElement* getElement(size_t index);
         size_t getElementCount();
 

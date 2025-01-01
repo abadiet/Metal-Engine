@@ -41,10 +41,3 @@ class RendererElement : public Mesh/*, public Texture*/, public Colors {
 };
 
 #endif /* RENDERER_Element_HPP */
-
-/*void ***::***(MTL::VertexDescriptor* descriptor) {
-    if (this->vertexDescriptor) {
-        this->vertexDescriptor->release();
-    }
-    this->vertexDescriptor = descriptor->retain();
-}*/

@@ -5,6 +5,14 @@ Movement::Movement() {
     rotationMatrix = mtlm::identity();
 }
 
+Movement::Movement(Movement&& other) noexcept {
+    translationMatrix = other.translationMatrix;
+    rotationMatrix = other.rotationMatrix;
+
+    other.translationMatrix = mtlm::identity();
+    other.rotationMatrix = mtlm::identity();
+}
+
 Movement::~Movement() {}
 
 void Movement::setPosition(simd::float3 position) {
@@ -44,4 +52,12 @@ void Movement::mvmtCircle(simd::float3 center, simd::float3 axis, float speed) {
 
 simd::float4x4 Movement::getMovementMatrix() {
     return translationMatrix * rotationMatrix;
+}
+
+simd::float4x4 Movement::getTranslationMatrix() {
+    return translationMatrix;
+}
+
+simd::float4x4 Movement::getRotationMatrix() {
+    return rotationMatrix;
 }

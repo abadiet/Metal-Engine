@@ -11,23 +11,28 @@ Renderer::Renderer(MTL::Device* device):
     buildMeshes();
     buildDepthStencilState();
 
-    id = scene->addCamera();
+    id = scene->addCamera(device);
     scene->getCamera(id)->setPosition({0.0f, 1.5f, 0.0f});
     scene->getCamera(id)->setOrientation({-0.5f, 0.0f, 0.0f});
     scene->getCamera(id)->setProjection(3.14f / 8.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
-    id = scene->addElement();
+    id = scene->addLight(device);
+    scene->getLight(id)->setPosition({0.0f, 1.5f, 0.0f});
+    scene->getLight(id)->setColor({1.0f, 1.0f, 1.0f});
+    scene->getLight(id)->setIntensity(1.0f);
+
+    id = scene->addElement(device);
     scene->getElement(id)->setRendererElement(&elements[1]);
     scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
     scene->getElement(id)->setOrientation({0.0f, 2.0f, 0.5f});
     scene->getElement(id)->setPosition({0.5f, 0.5f, 2.0f});
 
-    id = scene->addElement();
+    id = scene->addElement(device);
     scene->getElement(id)->setRendererElement(&elements[1]);
     scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
     scene->getElement(id)->setPosition({0.0f, 0.5f, 4.0f});
 
-    id = scene->addElement();
+    id = scene->addElement(device);
     scene->getElement(id)->setRendererElement(&elements[1]);
     scene->getElement(id)->setScale({0.5f, 0.5f, 0.5f});
     scene->getElement(id)->setPosition({0.0f, 0.0f, 3.0f});
@@ -68,9 +73,11 @@ void Renderer::drawInMTKView(MTK::View* view) {
     renderPass = view->currentRenderPassDescriptor();
     encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-    scene->getCamera(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    const simd::float4x4 viewCam = scene->getCamera(0)->viewMatrix();
-    encoder->setVertexBytes(&viewCam, sizeof(viewCam), 2);
+encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 2);
+
+    scene->getLight(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
+    scene->getLight(0)->update();
+    encoder->setFragmentBuffer(scene->getLight(0)->getBuffer(), 0, 0);
 
     encoder->setDepthStencilState(depthStencilState);
     encoder->setCullMode(MTL::CullModeFront);
@@ -86,8 +93,7 @@ void Renderer::drawInMTKView(MTK::View* view) {
         const auto element = scene->getElement(i);
         const auto rendererElement = element->getRendererElement();
         encoder->setRenderPipelineState(rendererElement->getPipeline());
-        const simd::float4x4 transform = element->getTransform();
-        encoder->setVertexBytes(&transform, sizeof(transform), 1);
+        encoder->setVertexBuffer(element->getBuffer(), 0, 1);
         encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
         encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, rendererElement->getIndices().size(), MTL::IndexType::IndexTypeUInt16, rendererElement->getIndexBuffer(), 0);
     }

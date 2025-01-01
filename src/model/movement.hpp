@@ -9,6 +9,7 @@ class Movement {
 
     public:
         Movement();
+        Movement(Movement&& other) noexcept;
         ~Movement();
 
         void setPosition(simd::float3 position);
@@ -22,6 +23,8 @@ class Movement {
         void mvmtCircle(simd::float3 center, simd::float3 axis, float speed);
 
         simd::float4x4 getMovementMatrix();
+        simd::float4x4 getTranslationMatrix();
+        simd::float4x4 getRotationMatrix();
 
     private:
         simd::float4x4 translationMatrix;

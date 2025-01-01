@@ -17,7 +17,7 @@ class Mesh {
         Mesh();
         Mesh(Mesh& mesh);
         Mesh(std::vector<Mesh::Vertex> vertices, std::vector<ushort> indices);
-        Mesh(Mesh&&) noexcept;
+        Mesh(Mesh&& other) noexcept;
         ~Mesh();
 
         std::vector<Mesh::Vertex> getVertices() const;

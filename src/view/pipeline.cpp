@@ -133,4 +133,6 @@ Pipeline::~Pipeline() {
     pipeline->release();
 }
 
-Pipeline::Pipeline() {}
+Pipeline::Pipeline() {
+    pipeline = nullptr;
+}

@@ -165,6 +165,14 @@ RendererElement::~RendererElement() {
 void RendererElement::update(MTL::Device* device) {
     std::vector<CompleteVertex> tosend;
     CompleteVertex tmp;
+
+    // if (vertexBuffer) {
+    //     vertexBuffer->release();
+    // }
+    // if (indexBuffer) {
+    //     indexBuffer->release();
+    // }
+
     size_t i = 0;
     auto colors = getColors();
     auto indices = getIndices();

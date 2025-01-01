@@ -1,6 +1,7 @@
 #ifndef SCNE_ELEMENT_HPP
 #define SCNE_ELEMENT_HPP
 
+#include <Metal/Metal.hpp>
 #include <simd/simd.h>
 #include "view/renderer_element.hpp"
 #include "model/mtlm.hpp"
@@ -10,7 +11,8 @@
 class SceneElement : public Movement {
 
     public:
-        SceneElement();
+        SceneElement(MTL::Device* device);
+        SceneElement(SceneElement&& other) noexcept;
         ~SceneElement();
 
         void setRendererElement(RendererElement *rendererElement);
@@ -19,11 +21,12 @@ class SceneElement : public Movement {
         void setScale(simd::float3 dRatios);
         void scale(simd::float3 dRatios);
 
-        simd::float4x4 getTransform();
+        MTL::Buffer* getBuffer();
 
     private:
         RendererElement *rendererElement;
         simd::float4x4 scaleMatrix;
+        MTL::Buffer *buffer;
 
 };
 

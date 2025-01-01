@@ -11,7 +11,7 @@ class Colors {
         Colors();
         Colors(Colors& colors);
         Colors(std::vector<simd::float3> colors);
-        Colors(Colors&&) noexcept;
+        Colors(Colors&& other) noexcept;
         ~Colors();
 
         void setColors(const std::vector<simd::float3>& colors);

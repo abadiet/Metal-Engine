@@ -4,7 +4,7 @@ Simple C++ Apple Metal 3D engine based on a Model-View-Controller pattern.
 > [!WARNING]
 > I coded this project for fun in a few days. Many bugs still remain and many features are missing.
 
-https://github.com/user-attachments/assets/7f0891eb-a414-4af6-933e-6b485fd07627
+https://github.com/user-attachments/assets/024d63b2-84ef-4215-ae6d-fe437ae702c9
 
 ## Class Diagram
 

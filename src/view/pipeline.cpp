@@ -88,8 +88,13 @@ MTL::RenderPipelineState* Pipeline::BuildGeneral(MTL::Device* device) {
     colorDescriptor->setBufferIndex(0);
     colorDescriptor->setOffset(8 * sizeof(float));
 
+    auto texCoordDescriptor = attributes->object(3);
+    texCoordDescriptor->setFormat(MTL::VertexFormat::VertexFormatFloat2);
+    texCoordDescriptor->setBufferIndex(0);
+    texCoordDescriptor->setOffset(12 * sizeof(float));
+
     auto layoutDescriptor = vertexDescriptor->layouts()->object(0);
-    layoutDescriptor->setStride(12 * sizeof(float));
+    layoutDescriptor->setStride(16 * sizeof(float));
 
     pipeline = Build(device, "../shaders/general.metal", "vertexMainGeneral", "fragmentMainGeneral", vertexDescriptor);
 

@@ -8,14 +8,14 @@
 #include "view/pipeline.hpp"
 
 
-class RendererElement : public Mesh/*, public Texture*/, public Colors {
+class RendererElement : public Mesh, public Colors {
 
     public:
         static RendererElement BuildSquare(MTL::Device* device);
         static RendererElement BuildCube(MTL::Device* device);
 
         RendererElement();
-        RendererElement(MTL::Device* device, Mesh mesh, Colors colors, MTL::RenderPipelineState* pipeline);
+        RendererElement(MTL::Device* device, Mesh mesh, Colors colors, MTL::Texture *texture, std::vector<simd::float2> texCoords, MTL::RenderPipelineState* pipeline);
         RendererElement(RendererElement&&) noexcept;
 
         ~RendererElement();
@@ -28,15 +28,19 @@ class RendererElement : public Mesh/*, public Texture*/, public Colors {
 
         MTL::Buffer* getVertexBuffer() const;
         MTL::Buffer* getIndexBuffer() const;
+        MTL::Texture* getTexture() const;
 
     private:
         struct CompleteVertex {
             Mesh::Vertex vertex;
-            simd::float3 color;            
+            simd::float3 color;
+            simd::float2 texCoord;
         };
 
         MTL::Buffer *vertexBuffer, *indexBuffer;
         MTL::RenderPipelineState *pipeline;
+        MTL::Texture *texture;
+        std::vector<simd::float2> texCoords;
 
 };
 

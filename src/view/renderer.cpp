@@ -106,6 +106,7 @@ void Renderer::drawInMTKView(MTK::View* view) {
         encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
         encoder->setVertexBuffer(element->getBufferPositionTransform(), 0, 1);
         encoder->setVertexBuffer(element->getBufferNormalTransform(), 0, 2);
+encoder->setFragmentTexture(rendererElement->getTexture(), 0);
         encoder->drawIndexedPrimitives(
             MTL::PrimitiveType::PrimitiveTypeTriangle,
             rendererElement->getIndices().size(),

@@ -19,6 +19,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${CMAKE_SOURCE_DIR}/lib/metal-cpp)
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${CMAKE_SOURCE_DIR}/lib/metal-cpp-extensions)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${CMAKE_SOURCE_DIR}/lib/stb_image)
 
 # Libraries
 find_library(APPLE_FWK_FOUNDATION Foundation REQUIRED)

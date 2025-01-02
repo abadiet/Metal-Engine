@@ -6,6 +6,7 @@ struct VertexInput {
     float3 position [[attribute(0)]];
     float3 normal [[attribute(1)]];
     float3 color [[attribute(2)]];
+    float2 texCoord [[attribute(3)]];
 };
 
 struct  __attribute__((packed)) Light {
@@ -19,13 +20,14 @@ struct VertexOutput {
     float3 realPosition;
     float3 normal;
     half3 color;
+    float2 texCoord;
 };
 
 VertexOutput vertex vertexMainGeneral(
     VertexInput input [[stage_in]],
-    constant float4x4& posTransform [[buffer(1)]],
-    constant float4x4& normTransform [[buffer(2)]],
-    constant float4x4& projection [[buffer(3)]]
+    constant float4x4 &posTransform [[buffer(1)]],
+    constant float4x4 &normTransform [[buffer(2)]],
+    constant float4x4 &projection [[buffer(3)]]
 ) {    
     VertexOutput output;
     const half4 transformedPosMat = half4x4(posTransform) * half4(half3(input.position), 1.0);
@@ -33,13 +35,15 @@ VertexOutput vertex vertexMainGeneral(
     output.projectedPosition = float4(half4x4(projection) * transformedPosMat);
     output.normal = normalize(float3((half4x4(normTransform) * half4(half3(input.normal), 1.0)).xyz));
     output.color = half3(input.color);
+    output.texCoord = input.texCoord;
     return output;
 }
 
 half4 fragment fragmentMainGeneral(
     VertexOutput input [[stage_in]],
     constant Light *light [[buffer(0)]],
-    constant int &lightCount [[buffer(1)]]
+    constant int &lightCount [[buffer(1)]],
+    texture2d< half, access::sample > texture [[texture(0)]]
 ) {
     int i;
     half3 color = half3(0.0, 0.0, 0.0);
@@ -52,5 +56,12 @@ half4 fragment fragmentMainGeneral(
     }
     // color = clamp(color, half3(0.0, 0.0, 0.0), half3(1.0, 1.0, 1.0));
     // input.color = clamp(input.color, half3(0.0, 0.0, 0.0), half3(1.0, 1.0, 1.0));
-    return half4(input.color * color, 1.0);
+
+    if (input.texCoord.x < 0.0 || input.texCoord.y < 0.0 || input.texCoord.x > 1.0 || input.texCoord.y > 1.0) {
+        return half4(input.color * color, 1.0);
+    }
+    constexpr sampler s(address::repeat, filter::linear);
+    const half3 texel = texture.sample(s, input.texCoord).rgb;
+
+    return half4(input.color * color * texel, 1.0);
 }

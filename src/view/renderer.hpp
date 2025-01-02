@@ -10,6 +10,7 @@
 
 #include "view/renderer_element.hpp"
 #include "view/pipeline.hpp"
+#include "view/texture.hpp"
 #include "model/mtlm.hpp"
 #include "model/scene.hpp"
 

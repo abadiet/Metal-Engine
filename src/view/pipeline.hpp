@@ -7,8 +7,6 @@
 #include <vector>
 
 
-/* TODO: Pipelines are never freed as well as VertexDescriptor */
-
 class Pipeline {
 
     public:

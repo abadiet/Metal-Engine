@@ -9,7 +9,7 @@
 class Light : public Movement {
 
     public:
-        Light(MTL::Device* device);
+        Light();
         Light(Light&& other) noexcept;
         ~Light();
 
@@ -22,20 +22,9 @@ class Light : public Movement {
         void setColor(simd::float3 color);
         simd::float3 getColor();
 
-        void update();
-
-        MTL::Buffer* getBuffer();
-
-    private:
-        struct Light_st {
-            simd::float3 position;
-            simd::float3 color;
-            float intensity;
-        };
-    
+    private:    
         float intensity;
         simd::float3 color;
-        MTL::Buffer* buffer;
 
 };
 

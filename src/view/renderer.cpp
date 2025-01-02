@@ -2,7 +2,7 @@
 
 Renderer::Renderer(MTL::Device* device):
     MTK::ViewDelegate(),
-    scene(new Scene()),
+    scene(new Scene(device)),
     device(device->retain())
 {
     size_t id;
@@ -11,28 +11,33 @@ Renderer::Renderer(MTL::Device* device):
     buildMeshes();
     buildDepthStencilState();
 
-    id = scene->addCamera(device);
+    id = scene->addCamera();
     scene->getCamera(id)->setPosition({0.0f, 1.5f, 0.0f});
     scene->getCamera(id)->setOrientation({-0.5f, 0.0f, 0.0f});
     scene->getCamera(id)->setProjection(3.14f / 8.0f, 4.0f / 3.0f, 0.1f, 10.0f);
 
-    id = scene->addLight(device);
+    id = scene->addLight();
+    scene->getLight(id)->setPosition({0.0f, 1.5f, 0.0f});
+    scene->getLight(id)->setColor({1.0f, 1.0f, 1.0f});
+    scene->getLight(id)->setIntensity(10.0f);
+
+    id = scene->addLight();
     scene->getLight(id)->setPosition({0.0f, 1.5f, 0.0f});
     scene->getLight(id)->setColor({1.0f, 0.1f, 0.1f});
-    scene->getLight(id)->setIntensity(100.0f);
+    scene->getLight(id)->setIntensity(10.0f);
 
-    id = scene->addElement(device);
+    id = scene->addElement();
     scene->getElement(id)->setRendererElement(&elements[1]);
     scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
     scene->getElement(id)->setOrientation({0.0f, 2.0f, 0.5f});
     scene->getElement(id)->setPosition({0.5f, 0.5f, 2.0f});
 
-    id = scene->addElement(device);
+    id = scene->addElement();
     scene->getElement(id)->setRendererElement(&elements[1]);
     scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
     scene->getElement(id)->setPosition({0.0f, 0.5f, 4.0f});
 
-    id = scene->addElement(device);
+    id = scene->addElement();
     scene->getElement(id)->setRendererElement(&elements[1]);
     scene->getElement(id)->setScale({0.5f, 0.5f, 0.5f});
     scene->getElement(id)->setPosition({0.0f, 0.0f, 3.0f});
@@ -66,6 +71,9 @@ void Renderer::drawInMTKView(MTK::View* view) {
     MTL::RenderPassDescriptor* renderPass;
     MTL::RenderCommandEncoder* encoder;
     size_t i;
+    int lightCount;
+    SceneElement *element;
+    RendererElement *rendererElement;
 
     pool = NS::AutoreleasePool::alloc()->init();
 
@@ -76,8 +84,10 @@ void Renderer::drawInMTKView(MTK::View* view) {
     encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 3);
 
     scene->getLight(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    scene->getLight(0)->update();
-    encoder->setFragmentBuffer(scene->getLight(0)->getBuffer(), 0, 0);
+    scene->updateLights();
+    encoder->setFragmentBuffer(scene->getBufferLights(), 0, 0);
+    lightCount = (int) scene->getLightCount();
+    encoder->setFragmentBytes((void*) &lightCount, sizeof(lightCount), 1);
 
     encoder->setDepthStencilState(depthStencilState);
     encoder->setCullMode(MTL::CullModeFront);
@@ -90,13 +100,19 @@ void Renderer::drawInMTKView(MTK::View* view) {
     scene->getElement(1)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, 0.03f);
 
     for (i = 0; i < scene->getElementCount(); i++) {
-        const auto element = scene->getElement(i);
-        const auto rendererElement = element->getRendererElement();
+        element = scene->getElement(i);
+        rendererElement = element->getRendererElement();
         encoder->setRenderPipelineState(rendererElement->getPipeline());
+        encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
         encoder->setVertexBuffer(element->getBufferPositionTransform(), 0, 1);
         encoder->setVertexBuffer(element->getBufferNormalTransform(), 0, 2);
-        encoder->setVertexBuffer(rendererElement->getVertexBuffer(), 0, 0);
-        encoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, rendererElement->getIndices().size(), MTL::IndexType::IndexTypeUInt16, rendererElement->getIndexBuffer(), 0);
+        encoder->drawIndexedPrimitives(
+            MTL::PrimitiveType::PrimitiveTypeTriangle,
+            rendererElement->getIndices().size(),
+            MTL::IndexType::IndexTypeUInt16,
+            rendererElement->getIndexBuffer(),
+            0
+        );
     }
 
     encoder->endEncoding();

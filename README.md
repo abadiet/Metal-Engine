@@ -13,8 +13,6 @@ https://github.com/user-attachments/assets/024d63b2-84ef-4215-ae6d-fe437ae702c9
 <img src="https://github.com/abadiet/Metal-Engine/blob/main/resources/class-diagram.png">
 
 ## Road Map
-- Lights
-- Textures
 - User Inputs?
 - Ray tracing
 

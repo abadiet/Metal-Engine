@@ -17,9 +17,10 @@ class RendererElement : public Mesh, public Colors {
         RendererElement();
         RendererElement(MTL::Device* device, Mesh mesh, Colors colors, MTL::Texture *texture, std::vector<simd::float2> texCoords, MTL::RenderPipelineState* pipeline);
         RendererElement(RendererElement&&) noexcept;
-
+        RendererElement(const RendererElement& other);
         ~RendererElement();
 
+        RendererElement& operator=(const RendererElement& other);
 
         void update(MTL::Device* device);
 
@@ -29,6 +30,9 @@ class RendererElement : public Mesh, public Colors {
         MTL::Buffer* getVertexBuffer() const;
         MTL::Buffer* getIndexBuffer() const;
         MTL::Texture* getTexture() const;
+
+        void setTexture(MTL::Texture* texture);
+        void setTextureCoords(std::vector<simd::float2> texCoords);
 
     private:
         struct CompleteVertex {

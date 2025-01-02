@@ -15,10 +15,12 @@ class Mesh {
 
     public:
         Mesh();
-        Mesh(Mesh& mesh);
         Mesh(std::vector<Mesh::Vertex> vertices, std::vector<ushort> indices);
         Mesh(Mesh&& other) noexcept;
+        Mesh(const Mesh& other);
         ~Mesh();
+
+        Mesh& operator=(const Mesh& other);
 
         std::vector<Mesh::Vertex> getVertices() const;
         void setVertices(const std::vector<Mesh::Vertex>& vertices);

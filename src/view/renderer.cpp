@@ -8,51 +8,123 @@ Renderer::Renderer(MTL::Device* device):
     size_t id;
 
     commandQueue = device->newCommandQueue();
-    buildMeshes();
+    buildRendererElements();
     buildDepthStencilState();
 
+/* main camera */
     id = scene->addCamera();
-    scene->getCamera(id)->setPosition({0.0f, 1.5f, 0.0f});
-    scene->getCamera(id)->setOrientation({-0.5f, 0.0f, 0.0f});
-    scene->getCamera(id)->setProjection(3.14f / 8.0f, 4.0f / 3.0f, 0.1f, 10.0f);
+    scene->getCamera(id)->setPosition({0.0f, 3.0f, 0.0f});
+    scene->getCamera(id)->setOrientation({0.0f, 0.0f, 0.0f});
+    scene->getCamera(id)->setProjection(3.14f / 8.0f, 4.0f / 3.0f, 0.1f, 20.0f);
 
+/* main light */
     id = scene->addLight();
-    scene->getLight(id)->setPosition({0.0f, 1.5f, 0.0f});
+    scene->getLight(id)->setPosition({0.0f, 10.0f, 0.0f});
     scene->getLight(id)->setColor({1.0f, 1.0f, 1.0f});
-    scene->getLight(id)->setIntensity(10.0f);
+    scene->getLight(id)->setIntensity(80.0f);
 
-    id = scene->addLight();
-    scene->getLight(id)->setPosition({0.0f, 1.5f, 0.0f});
-    scene->getLight(id)->setColor({1.0f, 0.1f, 0.1f});
-    scene->getLight(id)->setIntensity(10.0f);
+/* ground */
+    id = scene->addElement();
+    scene->getElement(id)->setRendererElement(&elements[0]);
+    scene->getElement(id)->setPosition({0.0f, 0.0f, 0.0f});
+    scene->getElement(id)->setOrientation({1.57f, 0.0f, 0.0f});
+    scene->getElement(id)->setScale({20.0f, 20.0f, 20.0f});
 
     id = scene->addElement();
     scene->getElement(id)->setRendererElement(&elements[1]);
-    scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
-    scene->getElement(id)->setOrientation({0.0f, 2.0f, 0.5f});
-    scene->getElement(id)->setPosition({0.5f, 0.5f, 2.0f});
-
-    id = scene->addElement();
-    scene->getElement(id)->setRendererElement(&elements[1]);
-    scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
-    scene->getElement(id)->setPosition({0.0f, 0.5f, 4.0f});
-
-    id = scene->addElement();
-    scene->getElement(id)->setRendererElement(&elements[1]);
+    scene->getElement(id)->setPosition({1.0f, 2.0f, 3.0f});
     scene->getElement(id)->setScale({0.5f, 0.5f, 0.5f});
-    scene->getElement(id)->setPosition({0.0f, 0.0f, 3.0f});
+
+    id = scene->addElement();
+    scene->getElement(id)->setRendererElement(&elements[1]);
+scene->getElement(id)->setPosition({1.0f, 2.0f, 4.0f});
+    scene->getElement(id)->setOrientation({0.0f, 2.0f, 0.5f});
+    scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
+    
+    // id = scene->addElement();
+// scene->getElement(id)->setRendererElement(&elements[1]);
+// scene->getElement(id)->setPosition({1.0f, 3.0f, 3.0f});
+// scene->getElement(id)->setScale({0.05f, 0.05f, 0.05f});
+
+
+    scene->updateLights();
 }
 
 Renderer::~Renderer() {
     depthStencilState->release();
     commandQueue->release();
     device->release();
+    Pipeline::Release();
+    Texture::Release();
     delete scene;
 }
 
-void Renderer::buildMeshes() {
-    elements.push_back(RendererElement::BuildSquare(device));
-    elements.push_back(RendererElement::BuildCube(device));
+void Renderer::buildRendererElements() {
+    RendererElement elem;
+
+    /* ground (actually just a colored cube) */
+    elem = RendererElement::BuildSquare(device);
+    elem.setColors({simd::float3{0.5f, 0.5f, 0.5f}});
+    elem.update(device);
+    elements.push_back(elem);
+
+    /* custom cubes */
+    elem = RendererElement::BuildCube(device);
+    elem.setTexture(Texture::Build(device, "../textures/abadiet.jpg"));
+    elem.setTextureCoords({
+        simd::float2{0.0f, 0.0f},
+        simd::float2{1.0f, 0.0f},
+        simd::float2{1.0f, 1.0f},
+        simd::float2{0.0f, 1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f},
+        simd::float2{-1.0f, -1.0f}
+    });
+    elem.setColors({
+        simd::float3{ 1.0f,  0.0f,  1.0f },
+        simd::float3{ 0.0f,  1.0f,  1.0f },
+        simd::float3{ 1.0f,  0.0f,  0.0f },
+        simd::float3{ 0.0f,  1.0f,  0.0f },
+        simd::float3{ 0.0f,  1.0f,  0.0f },
+        simd::float3{ 0.0f,  1.0f,  0.0f },
+        simd::float3{ 0.0f,  1.0f,  0.0f },
+        simd::float3{ 0.0f,  1.0f,  0.0f },
+        simd::float3{ 0.0f,  1.0f,  1.0f },
+        simd::float3{ 0.0f,  1.0f,  1.0f },
+        simd::float3{ 0.0f,  1.0f,  1.0f },
+        simd::float3{ 0.0f,  1.0f,  1.0f },
+        simd::float3{ 1.0f,  0.0f,  1.0f },
+        simd::float3{ 1.0f,  0.0f,  1.0f },
+        simd::float3{ 1.0f,  0.0f,  1.0f },
+        simd::float3{ 1.0f,  0.0f,  1.0f },
+        simd::float3{ 1.0f,  0.0f,  0.0f },
+        simd::float3{ 1.0f,  0.0f,  0.0f },
+        simd::float3{ 1.0f,  0.0f,  0.0f },
+        simd::float3{ 1.0f,  0.0f,  0.0f },
+        simd::float3{ 1.0f,  1.0f,  0.0f },
+        simd::float3{ 1.0f,  1.0f,  0.0f },
+        simd::float3{ 1.0f,  1.0f,  0.0f },
+        simd::float3{ 1.0f,  1.0f,  0.0f }
+    });
+    elem.update(device);
+    elements.push_back(elem);
 }
 
 void Renderer::buildDepthStencilState() {
@@ -81,24 +153,30 @@ void Renderer::drawInMTKView(MTK::View* view) {
     renderPass = view->currentRenderPassDescriptor();
     encoder = commandBuffer->renderCommandEncoder(renderPass);
 
-    encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 3);
+    /* CAMERA */
+    // scene->getCamera(0)->lookAt(*scene->getElement(1));
 
-    scene->getLight(0)->mvmtCircle({0.0f, 1.5f, 3.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    scene->updateLights();
-    encoder->setFragmentBuffer(scene->getBufferLights(), 0, 0);
-    lightCount = (int) scene->getLightCount();
-    encoder->setFragmentBytes((void*) &lightCount, sizeof(lightCount), 1);
+    /* LIGHTS */
+    // scene->getLight(1)->mvmtCircle({0.0f, 4.5f, 3.0f}, {0.0f, -1.0f, 0.0f}, 0.1f);
+    // scene->updateLight(1);
 
+    /* ELEMENTS */
+    // scene->getElement(1)->lookAt(*scene->getElement(2), simd::float3{0.0f, 0.0f, 1.0f});//, simd::float3{0.0f, 1.0f, 0.0f}, simd::float3{0.0f, 1.0f, 0.0f});
+    scene->getElement(2)->mvmtCircle({1.0f, 2.0f, 3.0f}, {1.0f, 1.0f, 0.0f}, 0.02f);
+    // scene->getElement(3)->mvmtCircle({1.0f, 2.0f, 3.0f}, {0.0f, 0.4f, 0.3f}, 0.03f);
+
+    /* DRAWING */
+    /* mode */
     encoder->setDepthStencilState(depthStencilState);
     encoder->setCullMode(MTL::CullModeFront);
     encoder->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
-
-    scene->getElement(0)->rotate({0.02f, 0.01f, 0.03f});
-    scene->getElement(0)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 0.0f, 1.0f}, 0.03f);
-
-    scene->getElement(1)->rotate({0.02f, 0.01f, 0.03f});
-    scene->getElement(1)->mvmtCircle({0.0f, 0.0f, 3.0f}, {1.0f, 1.0f, 1.0f}, 0.03f);
-
+    /* camera */
+    encoder->setVertexBuffer(scene->getCamera(0)->getBuffer(), 0, 3);
+    /* lights */
+    lightCount = (int) scene->getLightCount();
+    encoder->setFragmentBytes((void*) &lightCount, sizeof(lightCount), 1);
+    encoder->setFragmentBuffer(scene->getBufferLights(), 0, 0);
+    /* elements */
     for (i = 0; i < scene->getElementCount(); i++) {
         element = scene->getElement(i);
         rendererElement = element->getRendererElement();

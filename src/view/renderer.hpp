@@ -25,7 +25,7 @@ class Renderer : public MTK::ViewDelegate {
         virtual void drawInMTKView(MTK::View* view) override;
 
     private:
-        void buildMeshes();
+        void buildRendererElements();
         void buildDepthStencilState();
 
         Scene *scene;

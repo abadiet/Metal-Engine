@@ -28,11 +28,11 @@ VertexOutput vertex vertexMainGeneral(
     constant float4x4 &posTransform [[buffer(1)]],
     constant float4x4 &normTransform [[buffer(2)]],
     constant float4x4 &projection [[buffer(3)]]
-) {    
+) {
     VertexOutput output;
-    const half4 transformedPosMat = half4x4(posTransform) * half4(half3(input.position), 1.0);
-    output.realPosition = float3(transformedPosMat.xyz);
-    output.projectedPosition = float4(half4x4(projection) * transformedPosMat);
+    const float4 transformedPosMat = float4x4(posTransform) * float4(input.position, 1.0);
+    output.realPosition = transformedPosMat.xyz;
+    output.projectedPosition = float4x4(projection) * transformedPosMat;
     output.normal = normalize(float3((half4x4(normTransform) * half4(half3(input.normal), 1.0)).xyz));
     output.color = half3(input.color);
     output.texCoord = input.texCoord;
@@ -46,22 +46,22 @@ half4 fragment fragmentMainGeneral(
     texture2d< half, access::sample > texture [[texture(0)]]
 ) {
     int i;
-    half3 color = half3(0.0, 0.0, 0.0);
+    half3 lightColor = half3(0.0, 0.0, 0.0);
     for (i = 0; i < lightCount; i++) {
         const Light l = light[i];
         const float3 inBetween = l.position - input.realPosition;
         const float distance = length(inBetween);
         const float intensity = max(dot(input.normal, normalize(inBetween)), 0.0) * l.intensity / (distance * distance);
-        color += half3(l.color) * intensity;
+        lightColor += half3(l.color) * intensity;
     }
     // color = clamp(color, half3(0.0, 0.0, 0.0), half3(1.0, 1.0, 1.0));
     // input.color = clamp(input.color, half3(0.0, 0.0, 0.0), half3(1.0, 1.0, 1.0));
 
     if (input.texCoord.x < 0.0 || input.texCoord.y < 0.0 || input.texCoord.x > 1.0 || input.texCoord.y > 1.0) {
-        return half4(input.color * color, 1.0);
+        return half4(input.color * lightColor, 1.0);
     }
     constexpr sampler s(address::repeat, filter::linear);
     const half3 texel = texture.sample(s, input.texCoord).rgb;
 
-    return half4(input.color * color * texel, 1.0);
+    return half4(input.color * lightColor * texel, 1.0);
 }

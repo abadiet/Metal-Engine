@@ -9,10 +9,12 @@ class Colors {
 
     public:
         Colors();
-        Colors(Colors& colors);
+        Colors(const Colors& colors);
         Colors(std::vector<simd::float3> colors);
         Colors(Colors&& other) noexcept;
         ~Colors();
+
+        Colors& operator=(const Colors& other);
 
         void setColors(const std::vector<simd::float3>& colors);
         std::vector<simd::float3> getColors() const;

@@ -14,7 +14,7 @@ RendererElement RendererElement::BuildSquare(MTL::Device* device) {
     };
 
     const std::vector<simd::float3> colors = {
-        simd::float3{0.5f, 0.5f, 0.5f}
+        simd::float3{1.0f, 0.0f, 0.0f}
     };
 
     return RendererElement(device, Mesh(vertices, indices), Colors(colors), nullptr, {}, Pipeline::BuildGeneral(device));
@@ -63,49 +63,10 @@ RendererElement RendererElement::BuildCube(MTL::Device* device) {
     };
 
     const std::vector<simd::float3> colors = {
-        simd::float3{ 1.0f,  0.0f,  1.0f },
-        simd::float3{ 0.0f,  1.0f,  1.0f },
-        simd::float3{ 1.0f,  0.0f,  0.0f },
-        simd::float3{ 0.0f,  1.0f,  0.0f },
-
-        simd::float3{ 0.0f,  1.0f,  0.0f },
-        simd::float3{ 0.0f,  1.0f,  0.0f },
-        simd::float3{ 0.0f,  1.0f,  0.0f },
-        simd::float3{ 0.0f,  1.0f,  0.0f },
-
-        simd::float3{ 0.0f,  1.0f,  1.0f },
-        simd::float3{ 0.0f,  1.0f,  1.0f },
-        simd::float3{ 0.0f,  1.0f,  1.0f },
-        simd::float3{ 0.0f,  1.0f,  1.0f },
-
-        simd::float3{ 1.0f,  0.0f,  1.0f },
-        simd::float3{ 1.0f,  0.0f,  1.0f },
-        simd::float3{ 1.0f,  0.0f,  1.0f },
-        simd::float3{ 1.0f,  0.0f,  1.0f },
-
-        simd::float3{ 1.0f,  0.0f,  0.0f },
-        simd::float3{ 1.0f,  0.0f,  0.0f },
-        simd::float3{ 1.0f,  0.0f,  0.0f },
-        simd::float3{ 1.0f,  0.0f,  0.0f },
-
-        simd::float3{ 1.0f,  1.0f,  0.0f },
-        simd::float3{ 1.0f,  1.0f,  0.0f },
-        simd::float3{ 1.0f,  1.0f,  0.0f },
-        simd::float3{ 1.0f,  1.0f,  0.0f }
+        simd::float3{1.0f, 0.0f, 0.0f}
     };
 
-    const std::vector<simd::float2> texCoords = {
-        simd::float2{0.0f, 0.0f},
-        simd::float2{1.0f, 0.0f},
-        simd::float2{1.0f, 1.0f},
-        simd::float2{0.0f, 1.0f},
-        simd::float2{-1.0f, -1.0f},
-        simd::float2{-1.0f, -1.0f},
-        simd::float2{-1.0f, -1.0f},
-        simd::float2{-1.0f, -1.0f}
-    };
-
-    return RendererElement(device, Mesh(vertices, indices), Colors(colors), Texture::Build(device, "../textures/abadiet.jpg"), texCoords, Pipeline::BuildGeneral(device));
+    return RendererElement(device, Mesh(vertices, indices), Colors(colors), nullptr, {}, Pipeline::BuildGeneral(device));
 }
 
 RendererElement::RendererElement() {
@@ -171,6 +132,33 @@ RendererElement::RendererElement(RendererElement&& other) noexcept:
     other.texture = nullptr;
 }
 
+RendererElement::RendererElement(const RendererElement& other):
+    Mesh(other),
+    Colors(other)
+{
+    texCoords = other.texCoords;
+    if (other.vertexBuffer) {
+        vertexBuffer = other.vertexBuffer->retain();
+    } else {
+        vertexBuffer = nullptr;
+    }
+    if (other.indexBuffer) {
+        indexBuffer = other.indexBuffer->retain();
+    } else {
+        indexBuffer = nullptr;
+    }
+    if (other.pipeline) {
+        pipeline = other.pipeline->retain();
+    } else {
+        pipeline = nullptr;
+    }
+    if (other.texture) {
+        texture = other.texture->retain();
+    } else {
+        texture = nullptr;
+    }
+}
+
 RendererElement::~RendererElement() {
     if (vertexBuffer) {
         vertexBuffer->release();
@@ -184,6 +172,43 @@ RendererElement::~RendererElement() {
     if (texture) {
         texture->release();
     }
+}
+
+RendererElement& RendererElement::operator=(const RendererElement& other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    Mesh::operator=(other);
+    Colors::operator=(other);
+
+    texCoords = other.texCoords;
+    if (vertexBuffer) {
+        vertexBuffer->release();
+    }
+    if (other.vertexBuffer) {
+        vertexBuffer = other.vertexBuffer->retain();
+    }
+    if (indexBuffer) {
+        indexBuffer->release();
+    }
+    if (other.indexBuffer) {
+        indexBuffer = other.indexBuffer->retain();
+    }
+    if (pipeline) {
+        pipeline->release();
+    }
+    if (other.pipeline) {
+        pipeline = other.pipeline->retain();
+    }
+    if (texture) {
+        texture->release();
+    }
+    if (other.texture) {
+        texture = other.texture->retain();
+    }
+
+    return *this;
 }
 
 void RendererElement::update(MTL::Device* device) {
@@ -248,4 +273,15 @@ MTL::Buffer* RendererElement::getIndexBuffer() const {
 
 MTL::Texture* RendererElement::getTexture() const {
     return texture;
+}
+
+void RendererElement::setTexture(MTL::Texture* texture) {
+    if (this->texture) {
+        this->texture->release();
+    }
+    this->texture = texture->retain();
+}
+
+void RendererElement::setTextureCoords(std::vector<simd::float2> texCoords) {
+    this->texCoords = texCoords;
 }

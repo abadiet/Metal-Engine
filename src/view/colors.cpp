@@ -3,8 +3,14 @@
 
 Colors::Colors() {}
 
-Colors::Colors(Colors& colors) {
+Colors::Colors(const Colors& colors) {
     this->colors = colors.getColors();
+}
+
+Colors::Colors(Colors&& other) noexcept {
+    colors = other.getColors();
+
+    other.setColors({});
 }
 
 Colors::Colors(std::vector<simd::float3> colors) {
@@ -13,8 +19,14 @@ Colors::Colors(std::vector<simd::float3> colors) {
 
 Colors::~Colors() {}
 
-Colors::Colors(Colors&& other) noexcept {
+Colors& Colors::operator=(const Colors& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     colors = other.getColors();
+
+    return *this;
 }
 
 void Colors::setColors(const std::vector<simd::float3>& colors) {

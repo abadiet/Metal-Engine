@@ -3,6 +3,8 @@
 
 #include <simd/simd.h>
 
+#define MTLM_PI 3.1415927f
+
 namespace mtlm {
 
     simd::float4x4 identity();

@@ -77,6 +77,7 @@ void Scene::updateLight(size_t index) {
 
     if (index >= lenBufferLights) {
         updateLights();
+        return;
     }
 
     const simd::float3& position = lights[index].getPosition();

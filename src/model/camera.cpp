@@ -26,6 +26,14 @@ void Camera::setProjection(float fovy, float aspect, float near, float far) {
     projectionMatrix = mtlm::perspectiveProjection(fovy, aspect, near, far);
 }
 
+void Camera::lookAt(const Movement& target, bool headUp) {
+    if (headUp) {
+        Movement::lookAt(target, frontVec, upVec, simd::float3{0.0f, 1.0f, 0.0f});
+    } else {
+        Movement::lookAt(target, frontVec);
+    }
+}
+
 MTL::Buffer* Camera::getBuffer() {
     /* TODO: simd::inverse may be too expensive, manual inversion in Movement could be a solution */
     const simd::float4x4 viewMatrix = projectionMatrix * simd::inverse(getMovementMatrix());

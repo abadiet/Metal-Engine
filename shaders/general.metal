@@ -60,6 +60,7 @@ half4 fragment fragmentMainGeneral(
     if (input.texCoord.x < 0.0 || input.texCoord.y < 0.0 || input.texCoord.x > 1.0 || input.texCoord.y > 1.0) {
         return half4(input.color * lightColor, 1.0);
     }
+
     constexpr sampler s(address::repeat, filter::linear);
     const half3 texel = texture.sample(s, input.texCoord).rgb;
 

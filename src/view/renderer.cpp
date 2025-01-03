@@ -14,14 +14,13 @@ Renderer::Renderer(MTL::Device* device):
     /* main camera */
     id = scene->addCamera();
     scene->getCamera(id)->setPosition({0.0f, 3.0f, 0.0f});
-    scene->getCamera(id)->setOrientation({0.0f, 0.0f, 0.0f});
-    scene->getCamera(id)->setProjection(3.14f / 8.0f, 4.0f / 3.0f, 0.1f, 20.0f);
+    scene->getCamera(id)->setProjection(MTLM_PI / 8.0f, 4.0f / 3.0f, 0.1f, 40.0f);
 
     /* main light */
     id = scene->addLight();
     scene->getLight(id)->setPosition({0.0f, 10.0f, 0.0f});
     scene->getLight(id)->setColor({1.0f, 1.0f, 1.0f});
-    scene->getLight(id)->setIntensity(80.0f);
+    scene->getLight(id)->setIntensity(30.0f);
 
     /* camera light */
     id = scene->addLight();
@@ -30,27 +29,26 @@ Renderer::Renderer(MTL::Device* device):
 
     /* moving lights */
     id = scene->addLight();
-    scene->getLight(id)->setPosition({2.0f, 2.0f, 0.1f});
+    scene->getLight(id)->setPosition({2.0f, 0.01f, 0.0f});
     scene->getLight(id)->setColor({1.0f, 0.0f, 0.0f});
     scene->getLight(id)->setIntensity(3.0f);
 
     id = scene->addLight();
-    scene->getLight(id)->setPosition({-2.0f, -5.0f, 0.1f});
-    scene->getLight(id)->setColor({0.0f, 1.0f, 0.0f});
+    scene->getLight(id)->setPosition({-2.0f, 0.01f, 5.0f});
+    scene->getLight(id)->setColor({0.0f, 0.0f, 1.0f});
     scene->getLight(id)->setIntensity(3.0f);
 
     id = scene->addLight();
-    scene->getLight(id)->setPosition({3.0f, 0.0f, 0.1f});
-    scene->getLight(id)->setColor({0.0f, 0.0f, 1.0f});
+    scene->getLight(id)->setPosition({3.0f, 0.01f, -4.0f});
+    scene->getLight(id)->setColor({0.0f, 1.0f, 0.0f});
     scene->getLight(id)->setIntensity(3.0f);
 
     /* ground */
     id = scene->addElement();
     scene->getElement(id)->setRendererElement(&elements[0]);
     scene->getElement(id)->setPosition({0.0f, 0.0f, 0.0f});
-    scene->getElement(id)->setOrientation({1.57f, 0.0f, 0.0f});
+    scene->getElement(id)->setOrientation({MTLM_PI / 2.0f, 0.0f, 0.0f});
     scene->getElement(id)->setScale({20.0f, 20.0f, 20.0f});
-
 
     /* cubes */
     id = scene->addElement();
@@ -191,10 +189,13 @@ void Renderer::drawInMTKView(MTK::View* view) {
 
     /* LIGHTS */
     scene->getLight(1)->setPosition(scene->getCamera(0)->getPosition());
-    scene->getLight(2)->mvmtCircle({3.0f, 3.0f, 0.1f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    scene->getLight(3)->mvmtCircle({-2.0f, -3.0f, 0.1f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    scene->getLight(4)->mvmtCircle({5.0f, 2.0f, 0.1f}, {0.0f, 1.0f, 0.0f}, 0.05f);
-    scene->updateLights();
+    scene->getLight(2)->mvmtCircle({3.0f, 0.01f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
+    scene->getLight(3)->mvmtCircle({1.0f, 0.01f, 6.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
+    scene->getLight(4)->mvmtCircle({4.0f, 0.01f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0.05f);
+    scene->updateLight(1);
+    scene->updateLight(2);
+    scene->updateLight(3);
+    scene->updateLight(4);
 
     /* ELEMENTS */
     // scene->getElement(1)->lookAt(*scene->getElement(2), simd::float3{0.0f, 0.0f, 1.0f}, simd::float3{0.0f, 1.0f, 0.0f}, simd::float3{0.0f, 1.0f, 0.0f});

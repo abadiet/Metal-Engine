@@ -16,11 +16,16 @@ class Camera : public Movement {
 
         void setProjection(float fovy, float aspect, float near, float far);
 
+        void lookAt(const Movement& target, bool headUp = true);
+
         MTL::Buffer* getBuffer();
 
     private:
         simd::float4x4 projectionMatrix;
         MTL::Buffer *buffer;
+
+        const simd::float3 frontVec = {0.0f, 0.0f, 1.0f};
+        const simd::float3 upVec = {0.0f, 1.0f, 0.0f};
 
 };
 
